@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact"
+  },
+  "fmt": {
+    "semiColons": false
+  },
+  "imports": {
+    "@fresh/plugin-vite": "jsr:@fresh/plugin-vite@^1.1.2",
+    "fresh": "jsr:@fresh/core@^2.3.3",
+    "preact": "npm:preact@^10.29.1",
+    "vite": "npm:vite@^7.3.2"
+  },
+  "lint": {
+    "rules": {
+      "tags": [
+        "fresh",
+        "recommended"
+      ]
+    }
+  },
+  "tasks": {
+    "dev": "deno run -A npm:vite"
+  }
+}
