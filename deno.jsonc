@@ -8,7 +8,9 @@
   },
   "imports": {
     "@fresh/plugin-vite": "jsr:@fresh/plugin-vite@^1.1.2",
+    "@kysely/kysely": "jsr:@kysely/kysely@^0.28.16",
     "fresh": "jsr:@fresh/core@^2.3.3",
+    "mysql2": "npm:mysql2@^3.22.3",
     "preact": "npm:preact@^10.29.1",
     "vite": "npm:vite@^7.3.2"
   },
@@ -21,6 +23,6 @@
     }
   },
   "tasks": {
-    "dev": "deno run -A npm:vite"
+    "dev": "deno run -A vite"
   }
 }

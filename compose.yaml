@@ -1,0 +1,31 @@
+services:
+  mariadb:
+    image: mariadb:10.11.16-jammy
+    ports:
+      - 3306:3306
+    environment:
+      MARIADB_DATABASE: qonstellation
+      MARIADB_ROOT_PASSWORD: password
+    volumes:
+      - type: volume
+        source: mariadb_data
+        target: /var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 10s
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
+  adminer:
+    image: adminer:5.4.2
+    ports:
+      - 8080:8080
+    environment:
+      ADMINER_DEFAULT_SERVER: mariadb
+    depends_on:
+      mariadb:
+        condition: service_healthy
+
+volumes:
+  mariadb_data:
