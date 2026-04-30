@@ -9,6 +9,7 @@
   "imports": {
     "@fresh/plugin-vite": "jsr:@fresh/plugin-vite@^1.1.2",
     "@kysely/kysely": "jsr:@kysely/kysely@^0.28.16",
+    "@skyware/jetstream": "npm:@skyware/jetstream@^0.2.5",
     "fresh": "jsr:@fresh/core@^2.3.3",
     "mysql2": "npm:mysql2@^3.22.3",
     "preact": "npm:preact@^10.29.1",
