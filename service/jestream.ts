@@ -11,9 +11,11 @@ import { postMessage } from "../traq/index.ts"
 export class JetstreamService {
   private jetstream: Jetstream
   private cursor?: number
+  private readonly subscribingDids: string[]
 
   constructor(opts: { wantedDids: string[]; cursor?: number }) {
     this.cursor = opts.cursor
+    this.subscribingDids = opts.wantedDids
     this.jetstream = new Jetstream({
       wantedDids: opts.wantedDids,
       cursor: opts.cursor,
@@ -60,6 +62,11 @@ export class JetstreamService {
   }
 
   start() {
+    if (this.subscribingDids.length === 0) {
+      console.warn("No DIDs to subscribe. Jetstream will not start.")
+      return
+    }
+
     this.jetstream.start()
   }
 
