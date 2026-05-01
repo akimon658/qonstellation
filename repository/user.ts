@@ -70,7 +70,6 @@ export const saveUserTokens = async (
   data: {
     userId: string
     accessToken: string
-    refreshToken: string
   },
 ) => {
   await db
@@ -78,11 +77,9 @@ export const saveUserTokens = async (
     .values({
       user_id: data.userId,
       access_token: data.accessToken,
-      refresh_token: data.refreshToken,
     })
     .onDuplicateKeyUpdate({
       access_token: data.accessToken,
-      refresh_token: data.refreshToken,
     })
     .execute()
 }

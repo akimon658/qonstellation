@@ -28,7 +28,6 @@ export const handler = define.handlers({
     await saveUserTokens({
       userId: user.id,
       accessToken: token.accessToken,
-      refreshToken: token.refreshToken!,
     })
 
     const sessionToken = await createSessionToken(user.id)
