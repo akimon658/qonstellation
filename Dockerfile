@@ -16,4 +16,4 @@ COPY --from=builder /app/_fresh/ ./
 
 EXPOSE 8000
 
-CMD ["deno", "serve", "--allow-env", "--allow-net", "./server/server_entry.mjs"]
+CMD ["serve", "--allow-env", "--allow-net", "./server/server_entry.mjs"]
