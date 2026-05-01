@@ -19,6 +19,11 @@ export class JetstreamService {
       cursor: opts.cursor,
     })
     this.jetstream.onCreate("app.bsky.feed.post", async (event) => {
+      if (event.commit.record.embed) {
+        // Ignore posts with embed for now
+        return
+      }
+
       const atProtoUri = buildAtProtoUri({
         userDid: event.did,
         recordKey: event.commit.rkey,
