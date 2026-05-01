@@ -30,3 +30,7 @@ Deno.addSignalListener("SIGTERM", async () => {
 
   console.log("Shutdown complete")
 })
+
+if (import.meta.main) {
+  await app.listen()
+}
