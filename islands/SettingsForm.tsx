@@ -1,4 +1,4 @@
-import { useSignal } from "preact/signals"
+import { useSignal } from "@preact/signals"
 
 interface Props {
   did: string

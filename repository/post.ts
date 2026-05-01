@@ -4,9 +4,9 @@ export const getTraqMessageIdByAtProtoUri = async (
   atProtoUri: string,
 ): Promise<string | undefined> => {
   const result = await db.selectFrom("posts")
-  .select("traqMessageId")
-  .where("atProtoUri", "=", atProtoUri)
-  .executeTakeFirst()
+    .select("traqMessageId")
+    .where("atProtoUri", "=", atProtoUri)
+    .executeTakeFirst()
 
   return result?.traqMessageId
 }
@@ -19,4 +19,4 @@ export const savePostMetadata = async (data: {
     atProtoUri: data.atProtoUri,
     traqMessageId: data.traqMessageId,
   }).execute()
-})
+}
