@@ -17,6 +17,7 @@
     "@skyware/jetstream": "npm:@skyware/jetstream@^0.2.5",
     "@std/encoding": "jsr:@std/encoding@^1.0.10",
     "@std/http": "jsr:@std/http@^1.1.0",
+    "@subframe7536/iconv-lite": "npm:@subframe7536/iconv-lite@^0.8.1",
     "fresh": "jsr:@fresh/core@^2.3.3",
     "jose": "npm:jose@^6.2.3",
     "mysql2": "npm:mysql2@^3.22.3",

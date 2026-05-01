@@ -9,4 +9,4 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["run", "--allow-env", "--allow-net", "./main.ts"]
+CMD ["run", "--allow-env", "--allow-net", "--allow-read", "./_fresh/server.js"]
