@@ -16,4 +16,4 @@ COPY --from=builder /app/_fresh/ ./
 
 EXPOSE 8000
 
-CMD ["run", "--allow-env", "--allow-net", "--allow-read", "./_fresh/server.js"]
+CMD ["serve", "--allow-env", "--allow-net", "--allow-read", "./_fresh/server.js"]
