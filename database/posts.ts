@@ -2,6 +2,6 @@ import { Generated } from "@kysely/kysely"
 
 export interface PostsTable {
   id: Generated<number>
-  traqMessageId: string
-  atProtoUri: string
+  traq_message_id: string
+  at_proto_uri: string
 }

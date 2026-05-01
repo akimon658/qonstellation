@@ -25,7 +25,11 @@ export const handler = define.handlers({
     }
 
     await saveUser(user.id)
-    await saveUserTokens(user.id, token.accessToken, token.refreshToken!)
+    await saveUserTokens({
+      userId: user.id,
+      accessToken: token.accessToken,
+      refreshToken: token.refreshToken!,
+    })
 
     const sessionToken = await createSessionToken(user.id)
     const headers = new Headers({ Location: "/" })

@@ -9,9 +9,9 @@ import type { UserTokensTable } from "./userTokens.ts"
 export interface Database {
   posts: PostsTable
   users: UsersTable
-  systemStates: SystemStatesTable
-  userSettings: UserSettingsTable
-  userTokens: UserTokensTable
+  system_states: SystemStatesTable
+  user_settings: UserSettingsTable
+  user_tokens: UserTokensTable
 }
 
 const dialect = new MysqlDialect({

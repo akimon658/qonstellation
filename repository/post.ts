@@ -4,11 +4,11 @@ export const getTraqMessageIdByAtProtoUri = async (
   atProtoUri: string,
 ): Promise<string | undefined> => {
   const result = await db.selectFrom("posts")
-    .select("traqMessageId")
-    .where("atProtoUri", "=", atProtoUri)
+    .select("traq_message_id")
+    .where("at_proto_uri", "=", atProtoUri)
     .executeTakeFirst()
 
-  return result?.traqMessageId
+  return result?.traq_message_id
 }
 
 export const savePostMetadata = async (data: {
@@ -16,7 +16,7 @@ export const savePostMetadata = async (data: {
   traqMessageId: string
 }): Promise<void> => {
   await db.insertInto("posts").values({
-    atProtoUri: data.atProtoUri,
-    traqMessageId: data.traqMessageId,
+    at_proto_uri: data.atProtoUri,
+    traq_message_id: data.traqMessageId,
   }).execute()
 }
