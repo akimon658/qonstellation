@@ -24,6 +24,26 @@ export const getUserSettingByDid = async (
   return result
 }
 
+export const getUserSettingByUserId = async (userId: string) => {
+  return await db
+    .selectFrom("userSettings")
+    .select(["did", "targetChannelId"])
+    .where("userId", "=", userId)
+    .executeTakeFirst()
+}
+
+export const saveUserSettings = async (
+  userId: string,
+  did: string,
+  targetChannelId: string,
+) => {
+  await db
+    .insertInto("userSettings")
+    .values({ userId, did, targetChannelId })
+    .onDuplicateKeyUpdate({ did, targetChannelId })
+    .execute()
+}
+
 export const getUserAccessToken = async (userId: string) => {
   const result = await db
     .selectFrom("userTokens")
