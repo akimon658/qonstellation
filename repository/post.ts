@@ -1,14 +1,22 @@
-export const getTraqMessageIdByAtProtoUri = (
+import { db } from "../database/db.ts"
+
+export const getTraqMessageIdByAtProtoUri = async (
   atProtoUri: string,
 ): Promise<string | undefined> => {
-  // TODO
-  return Promise.resolve(undefined)
+  const result = await db.selectFrom("posts")
+  .select("traqMessageId")
+  .where("atProtoUri", "=", atProtoUri)
+  .executeTakeFirst()
+
+  return result?.traqMessageId
 }
 
-export const savePostMetadata = (data: {
+export const savePostMetadata = async (data: {
   atProtoUri: string
   traqMessageId: string
 }): Promise<void> => {
-  // TODO
-  return Promise.resolve()
+  await db.insertInto("posts").values({
+    atProtoUri: data.atProtoUri,
+    traqMessageId: data.traqMessageId,
+  }).execute()
 })
