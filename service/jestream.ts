@@ -6,7 +6,7 @@ import {
 } from "../repository/post.ts"
 import { saveJetstreamCursor } from "../repository/systemState.ts"
 import { getUserAccessToken, getUserSettingByDid } from "../repository/user.ts"
-import { postMessage } from "./traq.ts"
+import { postMessage } from "../traq/index.ts"
 
 export class JetstreamService {
   private jetstream: Jetstream
@@ -31,15 +31,23 @@ export class JetstreamService {
       }
 
       const userSetting = await getUserSettingByDid(event.did)
-      const messageId = await postMessage({
-        token: await getUserAccessToken(userSetting.userId),
-        channelId: userSetting.targetChannelId,
-        content: event.commit.record.text,
+      const accessToken = await getUserAccessToken(userSetting.userId)
+      const { data } = await postMessage({
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        path: {
+          channelId: userSetting.targetChannelId,
+        },
       })
+
+      if (!data) {
+        throw new Error("Failed to post message to traQ")
+      }
 
       await savePostMetadata({
         atProtoUri,
-        traqMessageId: messageId,
+        traqMessageId: data.id,
       })
 
       this.cursor = event.time_us
