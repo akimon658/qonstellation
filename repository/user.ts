@@ -33,3 +33,23 @@ export const getUserAccessToken = async (userId: string) => {
 
   return result.accessToken
 }
+
+export const saveUser = async (userId: string) => {
+  await db
+    .insertInto("users")
+    .values({ id: userId })
+    .onDuplicateKeyUpdate({ id: userId })
+    .execute()
+}
+
+export const saveUserTokens = async (
+  userId: string,
+  accessToken: string,
+  refreshToken: string,
+) => {
+  await db
+    .insertInto("userTokens")
+    .values({ userId, accessToken, refreshToken })
+    .onDuplicateKeyUpdate({ accessToken, refreshToken })
+    .execute()
+}

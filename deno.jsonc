@@ -1,18 +1,23 @@
 {
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "preact"
+    "jsxImportSource": "preact",
+    "noUncheckedIndexedAccess": true
   },
   "fmt": {
     "semiColons": false
   },
   "imports": {
+    "@badgateway/oauth2-client": "npm:@badgateway/oauth2-client@^3.3.1",
     "@fresh/plugin-vite": "jsr:@fresh/plugin-vite@^1.1.2",
     "@hey-api/openapi-ts": "npm:@hey-api/openapi-ts@^0.97.0",
     "@hey-api/vite-plugin": "npm:@hey-api/vite-plugin@^0.3.1",
     "@kysely/kysely": "jsr:@kysely/kysely@^0.28.16",
     "@skyware/jetstream": "npm:@skyware/jetstream@^0.2.5",
+    "@std/encoding": "jsr:@std/encoding@^1.0.10",
+    "@std/http": "jsr:@std/http@^1.1.0",
     "fresh": "jsr:@fresh/core@^2.3.3",
+    "jose": "npm:jose@^6.2.3",
     "mysql2": "npm:mysql2@^3.22.3",
     "preact": "npm:preact@^10.29.1",
     "vite": "npm:vite@^7.3.2"

@@ -1,3 +1,7 @@
 import { createDefine } from "fresh"
 
-export const define = createDefine()
+interface State {
+  userId?: string
+}
+
+export const define = createDefine<State>()
