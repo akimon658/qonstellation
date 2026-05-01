@@ -1,6 +1,6 @@
 import type { Kysely } from "@kysely/kysely"
 
-export const up = async (db: Kysely<unknown>) => {
+const up = async (db: Kysely<unknown>) => {
   await db.schema
     .createTable("users")
     .addColumn("id", "uuid", (col) => col.primaryKey())
@@ -52,10 +52,12 @@ export const up = async (db: Kysely<unknown>) => {
     .execute()
 }
 
-export const down = async (db: Kysely<unknown>) => {
+const down = async (db: Kysely<unknown>) => {
   await db.schema.dropTable("user_tokens").execute()
   await db.schema.dropTable("user_settings").execute()
   await db.schema.dropTable("system_states").execute()
   await db.schema.dropTable("posts").execute()
   await db.schema.dropTable("users").execute()
 }
+
+export default { up, down }
