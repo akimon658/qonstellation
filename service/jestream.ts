@@ -1,5 +1,6 @@
 import { Jetstream } from "@skyware/jetstream"
 import { buildAtProtoUri } from "../lib/atProto.ts"
+import { buildMessageContent } from "../lib/buildMessageContent.ts"
 import { config } from "../lib/config.ts"
 import {
   getTraqMessageIdByAtProtoUri,
@@ -27,7 +28,11 @@ export class JetstreamService {
       cursor: opts.cursor,
     })
     this.jetstream.onCreate("app.bsky.feed.post", async (event) => {
-      if (event.commit.record.embed || event.commit.record.reply?.parent) {
+      if (
+        event.commit.record.embed &&
+          event.commit.record.embed.$type !== "app.bsky.embed.external" ||
+        event.commit.record.reply?.parent
+      ) {
         // Ignore replies posts with embed for now
         return
       }
@@ -53,7 +58,9 @@ export class JetstreamService {
           channelId: userSetting.targetChannelId,
         },
         body: {
-          content: event.commit.record.text,
+          content: buildMessageContent({
+            post: event.commit.record,
+          }),
         },
       })
 
