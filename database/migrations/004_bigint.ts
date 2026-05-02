@@ -7,11 +7,4 @@ const up = async (db: Kysely<unknown>) => {
     .execute()
 }
 
-const down = async (db: Kysely<unknown>) => {
-  await db.schema
-    .alterTable("system_states")
-    .alterColumn("value", (col) => col.setDataType("integer"))
-    .execute()
-}
-
-export default { down, up }
+export default { up }
