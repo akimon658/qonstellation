@@ -28,12 +28,12 @@ export class JetstreamService {
       cursor: opts.cursor,
     })
     this.jetstream.onCreate("app.bsky.feed.post", async (event) => {
-      if (
-        event.commit.record.embed &&
-          event.commit.record.embed.$type !== "app.bsky.embed.external" ||
-        event.commit.record.reply?.parent
-      ) {
-        // Ignore replies posts with embed for now
+      const hasNonExternalEmbed = event.commit.record.embed &&
+        event.commit.record.embed.$type !== "app.bsky.embed.external"
+      const isReply = !!event.commit.record.reply?.parent
+
+      if (hasNonExternalEmbed || isReply) {
+        // Ignore replies and posts with embeds other than app.bsky.embed.external for now
         return
       }
 
