@@ -13,8 +13,9 @@ export const buildMessageContent = ({ post }: BuildMessageParams) => {
   }
 
   let textBytes = encoder.encode(post.text)
+  // Sort facets in reverse order to avoid affecting the byte offsets of subsequent facets
   const facets = post.facets.sort((a, b) =>
-    a.index.byteStart - b.index.byteStart
+    b.index.byteStart - a.index.byteStart
   )
 
   for (const facet of facets) {
