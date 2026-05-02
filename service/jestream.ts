@@ -52,6 +52,9 @@ export class JetstreamService {
         path: {
           channelId: userSetting.targetChannelId,
         },
+        body: {
+          content: event.commit.record.text,
+        },
       })
 
       if (!data) {
