@@ -47,7 +47,7 @@ export const buildMessageContent = ({ post, imageIds }: BuildMessageParams) => {
     text = decoder.decode(textBytes)
   }
 
-  if (imageIds) {
+  if (imageIds?.length) {
     const imageLinks = imageIds.map((id) => `${config.traqBaseUrl}/files/${id}`)
       .join("\n")
 
