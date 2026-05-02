@@ -50,6 +50,9 @@ export class JetstreamService {
         console.warn(
           `Skipping post ${atProtoUri} because it has unsupported embed or is a reply.`,
         )
+
+        this.cursor = event.time_us
+
         return
       }
 
