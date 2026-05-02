@@ -27,8 +27,8 @@ export class JetstreamService {
       cursor: opts.cursor,
     })
     this.jetstream.onCreate("app.bsky.feed.post", async (event) => {
-      if (event.commit.record.embed) {
-        // Ignore posts with embed for now
+      if (event.commit.record.embed || event.commit.record.reply?.parent) {
+        // Ignore replies posts with embed for now
         return
       }
 
