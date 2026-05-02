@@ -24,6 +24,7 @@ export class JetstreamService {
     this.cursor = opts.cursor
     this.subscribingDids = opts.wantedDids
     this.jetstream = new Jetstream({
+      wantedCollections: ["app.bsky.feed.post"],
       wantedDids: opts.wantedDids,
       cursor: opts.cursor,
     })
