@@ -2,13 +2,16 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "jsxImportSource": "preact",
-    "noUncheckedIndexedAccess": true
+    "noUncheckedIndexedAccess": true,
+    "verbatimModuleSyntax": true
   },
   "fmt": {
     "semiColons": false
   },
   "imports": {
     "@atcute/bluesky": "npm:@atcute/bluesky@^3.3.3",
+    "@atcute/client": "npm:@atcute/client@^4.2.1",
+    "@atcute/lexicons": "npm:@atcute/lexicons@^1.3.0",
     "@badgateway/oauth2-client": "npm:@badgateway/oauth2-client@^3.3.1",
     "@fresh/plugin-vite": "jsr:@fresh/plugin-vite@^1.1.2",
     "@hey-api/openapi-ts": "npm:@hey-api/openapi-ts@^0.97.0",

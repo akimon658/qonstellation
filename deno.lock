@@ -36,6 +36,8 @@
     "jsr:@std/streams@^1.1.0": "1.1.0",
     "jsr:@std/uuid@^1.0.9": "1.1.1",
     "npm:@atcute/bluesky@^3.3.3": "3.3.3",
+    "npm:@atcute/client@^4.2.1": "4.2.1",
+    "npm:@atcute/lexicons@^1.3.0": "1.3.0",
     "npm:@babel/core@^7.28.0": "7.29.0",
     "npm:@babel/preset-react@^7.27.1": "7.28.5_@babel+core@7.29.0",
     "npm:@badgateway/oauth2-client@^3.3.1": "3.3.1",
@@ -216,6 +218,20 @@
       "dependencies": [
         "@atcute/atproto",
         "@atcute/lexicons"
+      ]
+    },
+    "@atcute/client@4.2.1": {
+      "integrity": "sha512-ZBFM2pW075JtgGFu5g7HHZBecrClhlcNH8GVP9Zz1aViWR+cjjBsTpeE63rJs+FCOHFYlirUyo5L8SGZ4kMINw==",
+      "dependencies": [
+        "@atcute/identity",
+        "@atcute/lexicons"
+      ]
+    },
+    "@atcute/identity@1.1.4": {
+      "integrity": "sha512-RCw1IqflfuSYCxK5m0lZCm0UnvIzcUnuhngiBhJEJb9a9Mc2SEf1xP3H8N5r8pvEH1LoAYd6/zrvCNU+uy9esw==",
+      "dependencies": [
+        "@atcute/lexicons",
+        "@badrap/valita"
       ]
     },
     "@atcute/lexicons@1.3.0": {
@@ -419,6 +435,9 @@
     },
     "@badgateway/oauth2-client@3.3.1": {
       "integrity": "sha512-7R4mZocEt8nOIMCz9cQyxsrY7n/jhFW9YUW6Er9ySnBzH92wA0KmQUR1cT2encq2Lix6kRD2GyQRAmT1dWtwzg=="
+    },
+    "@badrap/valita@0.4.6": {
+      "integrity": "sha512-4kdqcjyxo/8RQ8ayjms47HCWZIF5981oE5nIenbfThKDxWXtEHKipAOWlflpPJzZx9y/JWYQkp18Awr7VuepFg=="
     },
     "@esbuild/aix-ppc64@0.25.12": {
       "integrity": "sha512-Hhmwd6CInZ3dwpuGTF8fJG6yoWmsToE+vYgD4nytZVxcu1ulHpUQRAB1UJ8+N1Am3Mz4+xOByoQoSZf4D+CpkA==",
@@ -1707,6 +1726,8 @@
       "jsr:@std/encoding@^1.0.10",
       "jsr:@std/http@^1.1.0",
       "npm:@atcute/bluesky@^3.3.3",
+      "npm:@atcute/client@^4.2.1",
+      "npm:@atcute/lexicons@^1.3.0",
       "npm:@badgateway/oauth2-client@^3.3.1",
       "npm:@hey-api/openapi-ts@0.97",
       "npm:@hey-api/vite-plugin@~0.3.1",
