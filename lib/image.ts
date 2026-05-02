@@ -1,4 +1,4 @@
-import { AppBskyEmbedImages } from "@atcute/bluesky"
+import type { AppBskyEmbedImages } from "@atcute/bluesky"
 import { Client, simpleFetchHandler } from "@atcute/client"
 import { type Did } from "@atcute/lexicons"
 import { isLegacyBlob } from "@atcute/lexicons/interfaces"

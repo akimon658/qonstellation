@@ -1,4 +1,4 @@
-import { AppBskyFeedPost } from "@atcute/bluesky"
+import type { AppBskyFeedPost } from "@atcute/bluesky"
 import { Jetstream } from "@skyware/jetstream"
 import { buildAtProtoUri } from "../lib/atProto.ts"
 import { buildMessageContent } from "../lib/buildMessageContent.ts"

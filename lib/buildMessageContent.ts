@@ -1,4 +1,4 @@
-import { AppBskyFeedPost } from "@atcute/bluesky"
+import type { AppBskyFeedPost } from "@atcute/bluesky"
 import { config } from "./config.ts"
 
 interface BuildMessageParams {
