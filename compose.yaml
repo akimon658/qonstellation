@@ -1,15 +1,18 @@
 services:
   mariadb:
     image: mariadb:10.11.16-jammy
+    restart: unless-stopped
     ports:
       - 3306:3306
     environment:
-      MARIADB_DATABASE: qonstellation
       MARIADB_ROOT_PASSWORD: password
     volumes:
       - type: volume
         source: mariadb_data
         target: /var/lib/mysql
+      - type: bind
+        source: ./dev/mariadb/
+        target: /docker-entrypoint-initdb.d/
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       start_period: 10s
@@ -17,8 +20,46 @@ services:
       timeout: 10s
       retries: 10
 
+  traq_server:
+    image: ghcr.io/traptitech/traq:3.28.1
+    restart: unless-stopped
+    environment:
+      TRAQ_MARIADB_HOST: mariadb
+      TRAQ_MARIADB_USER: root
+      TRAQ_MARIADB_PASSWORD: password
+      TRAQ_STORAGE_LOCAL_DIR: /app/storage
+    volumes:
+      - type: volume
+        source: traq_storage
+        target: /app/storage
+    depends_on:
+      mariadb:
+        condition: service_healthy
+
+  traq_ui:
+    image: ghcr.io/traptitech/traq-ui:3.31.3
+    restart: unless-stopped
+    volumes:
+      - type: volume
+        source: traq_override
+        target: /app/override
+
+  caddy:
+    image: caddy:2.11.2-alpine
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    volumes:
+      - type: bind
+        source: ./dev/caddy/
+        target: /etc/caddy/
+    depends_on:
+      - traq_server
+      - traq_ui
+
   adminer:
     image: adminer:5.4.2
+    restart: unless-stopped
     ports:
       - 8080:8080
     environment:
@@ -29,3 +70,5 @@ services:
 
 volumes:
   mariadb_data:
+  traq_storage:
+  traq_override:

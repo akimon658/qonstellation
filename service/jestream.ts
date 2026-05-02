@@ -1,12 +1,18 @@
 import { Jetstream } from "@skyware/jetstream"
 import { buildAtProtoUri } from "../lib/atProto.ts"
+import { config } from "../lib/config.ts"
 import {
   getTraqMessageIdByAtProtoUri,
   savePostMetadata,
 } from "../repository/post.ts"
 import { saveJetstreamCursor } from "../repository/systemState.ts"
 import { getUserAccessToken, getUserSettingByDid } from "../repository/user.ts"
+import { client } from "../traq/client.gen.ts"
 import { postMessage } from "../traq/index.ts"
+
+client.setConfig({
+  baseUrl: `${config.traqBaseUrl}/api/v3`,
+})
 
 export class JetstreamService {
   private jetstream: Jetstream

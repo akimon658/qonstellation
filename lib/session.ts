@@ -1,10 +1,9 @@
 import { decodeBase64 } from "@std/encoding"
 import { getCookies, setCookie } from "@std/http"
 import { jwtVerify, SignJWT } from "jose"
+import { config } from "./config.ts"
 
-const secret = decodeBase64(
-  Deno.env.get("QONSTELLATION_JWT_SECRET")!,
-)
+const secret = decodeBase64(config.qonstellationJwtSecret)
 const COOKIE_NAME = "qonstellation_session"
 
 export const createSessionToken = (userId: string) =>

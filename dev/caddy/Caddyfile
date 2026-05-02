@@ -1,0 +1,9 @@
+:3000 {
+	handle /api/* {
+		reverse_proxy traq_server:3000
+	}
+
+	handle {
+		reverse_proxy traq_ui:80
+	}
+}
