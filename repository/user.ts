@@ -29,12 +29,22 @@ export const getUserSettingByDid = async (
   }
 }
 
-export const getUserSettingByUserId = async (userId: string) => {
-  return await db
+export const getUserSettingByUserId = async (
+  userId: string,
+): Promise<UserSetting | undefined> => {
+  const result = await db
     .selectFrom("user_settings")
     .select(["did", "target_channel_id"])
     .where("user_id", "=", userId)
     .executeTakeFirst()
+
+  return result
+    ? {
+      userId,
+      did: result.did,
+      targetChannelId: result.target_channel_id,
+    }
+    : undefined
 }
 
 export const saveUserSettings = async (
