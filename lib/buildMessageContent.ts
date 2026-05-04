@@ -1,4 +1,8 @@
-import { AppBskyEmbedRecord, type AppBskyFeedPost } from "@atcute/bluesky"
+import {
+  AppBskyEmbedRecord,
+  AppBskyEmbedRecordWithMedia,
+  type AppBskyFeedPost,
+} from "@atcute/bluesky"
 import { is, parseResourceUri } from "@atcute/lexicons"
 import { getTraqMessageIdByAtProtoUri } from "../repository/post.ts"
 import { config } from "./config.ts"
@@ -59,8 +63,8 @@ export const buildMessageContent = async (
   }
 
   if (
-    post.embed?.$type === "app.bsky.embed.record" ||
-    post.embed?.$type === "app.bsky.embed.recordWithMedia"
+    is(AppBskyEmbedRecord.mainSchema, post.embed) ||
+    is(AppBskyEmbedRecordWithMedia.mainSchema, post.embed)
   ) {
     let embeddedRecordUriStr: string
 
