@@ -1,4 +1,10 @@
-import type { AppBskyFeedPost } from "@atcute/bluesky"
+import {
+  AppBskyEmbedRecord,
+  AppBskyEmbedRecordWithMedia,
+  type AppBskyFeedPost,
+} from "@atcute/bluesky"
+import { is, parseResourceUri } from "@atcute/lexicons"
+import { getTraqMessageIdByAtProtoUri } from "../repository/post.ts"
 import { config } from "./config.ts"
 
 interface BuildMessageParams {
@@ -9,7 +15,9 @@ interface BuildMessageParams {
 const encoder = new TextEncoder()
 const decoder = new TextDecoder()
 
-export const buildMessageContent = ({ post, imageIds }: BuildMessageParams) => {
+export const buildMessageContent = async (
+  { post, imageIds }: BuildMessageParams,
+) => {
   let text = post.text
 
   if (post.facets?.length) {
@@ -52,6 +60,43 @@ export const buildMessageContent = ({ post, imageIds }: BuildMessageParams) => {
       .join("\n")
 
     text = text ? `${text}\n${imageLinks}` : imageLinks
+  }
+
+  if (
+    is(AppBskyEmbedRecord.mainSchema, post.embed) ||
+    is(AppBskyEmbedRecordWithMedia.mainSchema, post.embed)
+  ) {
+    let embeddedRecordUriStr: string
+
+    if (is(AppBskyEmbedRecord.mainSchema, post.embed.record)) {
+      embeddedRecordUriStr = post.embed.record.record.uri
+    } else {
+      embeddedRecordUriStr = post.embed.record.uri
+    }
+
+    let urlToAppend: string
+    const traqMessageId = await getTraqMessageIdByAtProtoUri(
+      embeddedRecordUriStr,
+    )
+
+    if (traqMessageId) {
+      // This message is already posted to traQ, so we can append its URL to the text
+      urlToAppend = `${config.traqBaseUrl}/messages/${traqMessageId}`
+    } else {
+      // This message is not posted to traQ, so we should append the URL to the original post
+      const embeddedRecordUri = parseResourceUri(embeddedRecordUriStr)
+
+      if (embeddedRecordUri.ok) {
+        urlToAppend =
+          `https://bsky.app/profile/${embeddedRecordUri.value.repo}/post/${embeddedRecordUri.value.rkey}`
+      } else {
+        throw new Error("Invalid embedded record URI", {
+          cause: embeddedRecordUri.error,
+        })
+      }
+    }
+
+    text = text ? `${text}\n${urlToAppend}` : urlToAppend
   }
 
   return text

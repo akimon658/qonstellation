@@ -1,4 +1,9 @@
-import { AppBskyFeedPost } from "@atcute/bluesky"
+import {
+  AppBskyEmbedImages,
+  AppBskyEmbedRecordWithMedia,
+  AppBskyEmbedVideo,
+  AppBskyFeedPost,
+} from "@atcute/bluesky"
 import { JetstreamSubscription } from "@atcute/jetstream"
 import { type Did, is } from "@atcute/lexicons"
 import { buildAtProtoUri } from "../lib/atProto.ts"
@@ -13,13 +18,6 @@ import { saveJetstreamCursor } from "../repository/systemState.ts"
 import { getUserAccessToken, getUserSettingByDid } from "../repository/user.ts"
 import { client } from "../traq/client.gen.ts"
 import { postMessage } from "../traq/index.ts"
-
-type EmbedType = NonNullable<AppBskyFeedPost.Main["embed"]>["$type"]
-
-const SUPPORTED_EMBED_TYPES: readonly EmbedType[] = [
-  "app.bsky.embed.external",
-  "app.bsky.embed.images",
-] as const
 
 client.setConfig({
   baseUrl: `${config.traqBaseUrl}/api/v3`,
@@ -92,13 +90,14 @@ export class JetstreamService {
             userDid: event.did,
             recordKey: event.commit.rkey,
           })
-          const hasNonSupportedEmbed = event.commit.record.embed &&
-            !SUPPORTED_EMBED_TYPES.includes(event.commit.record.embed.$type)
           const isReply = !!event.commit.record.reply?.parent
 
-          if (hasNonSupportedEmbed || isReply) {
+          if (
+            is(AppBskyEmbedVideo.mainSchema, event.commit.record.embed) ||
+            isReply
+          ) {
             console.warn(
-              `Skipping post ${atProtoUri} because it has unsupported embed or is a reply.`,
+              `Skipping post ${atProtoUri} because it has video or is a reply.`,
             )
 
             this.cursor = event.time_us
@@ -118,13 +117,26 @@ export class JetstreamService {
 
           const userSetting = await getUserSettingByDid(event.did)
           const accessToken = await getUserAccessToken(userSetting.userId)
+          let images: AppBskyEmbedImages.Image[] | undefined
           let imageIds: string[] | undefined
 
-          if (event.commit.record.embed?.$type === "app.bsky.embed.images") {
+          if (is(AppBskyEmbedImages.mainSchema, event.commit.record.embed)) {
+            images = event.commit.record.embed.images
+          } else if (
+            is(
+              AppBskyEmbedRecordWithMedia.mainSchema,
+              event.commit.record.embed,
+            ) &&
+            is(AppBskyEmbedImages.mainSchema, event.commit.record.embed.media)
+          ) {
+            images = event.commit.record.embed.media.images
+          }
+
+          if (images?.length) {
             imageIds = await uploadImages({
               accessToken,
               did: event.did,
-              images: event.commit.record.embed.images,
+              images: images,
               targetChannelId: userSetting.targetChannelId,
             })
 
@@ -141,7 +153,7 @@ export class JetstreamService {
               channelId: userSetting.targetChannelId,
             },
             body: {
-              content: buildMessageContent({
+              content: await buildMessageContent({
                 imageIds,
                 post: event.commit.record,
               }),
