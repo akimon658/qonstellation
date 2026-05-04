@@ -37,6 +37,8 @@
     "jsr:@std/uuid@^1.0.9": "1.1.1",
     "npm:@atcute/bluesky@^3.3.3": "3.3.3",
     "npm:@atcute/client@^4.2.1": "4.2.1",
+    "npm:@atcute/jetstream@*": "1.1.2",
+    "npm:@atcute/jetstream@^1.1.2": "1.1.2",
     "npm:@atcute/lexicons@^1.3.0": "1.3.0",
     "npm:@babel/core@^7.28.0": "7.29.0",
     "npm:@babel/preset-react@^7.27.1": "7.28.5_@babel+core@7.29.0",
@@ -48,7 +50,6 @@
     "npm:@preact/signals@^2.9.0": "2.9.0_preact@10.29.1",
     "npm:@prefresh/vite@^2.4.8": "2.4.12_preact@10.29.1_vite@7.3.2__@types+node@25.6.0_@types+node@25.6.0",
     "npm:@remix-run/node-fetch-server@0.12": "0.12.0",
-    "npm:@skyware/jetstream@~0.2.5": "0.2.5",
     "npm:@subframe7536/iconv-lite@~0.8.1": "0.8.1",
     "npm:@types/babel__core@^7.20.5": "7.20.5",
     "npm:esbuild-wasm@~0.25.11": "0.25.12",
@@ -232,6 +233,18 @@
       "dependencies": [
         "@atcute/lexicons",
         "@badrap/valita"
+      ]
+    },
+    "@atcute/jetstream@1.1.2": {
+      "integrity": "sha512-u6p/h2xppp7LE6W/9xErAJ6frfN60s8adZuCKtfAaaBBiiYbb1CfpzN8Uc+2qtJZNorqGvuuDb5572Jmh7yHBQ==",
+      "dependencies": [
+        "@atcute/lexicons",
+        "@badrap/valita",
+        "@mary-ext/event-iterator",
+        "@mary-ext/simple-event-emitter",
+        "partysocket",
+        "type-fest",
+        "yocto-queue"
       ]
     },
     "@atcute/lexicons@1.3.0": {
@@ -925,6 +938,15 @@
     "@lukeed/ms@2.0.2": {
       "integrity": "sha512-9I2Zn6+NJLfaGoz9jN3lpwDgAYvfGeNYdbAIjJOqzs4Tpc+VU3Jqq4IofSUBKajiDS8k9fZIg18/z13mpk1bsA=="
     },
+    "@mary-ext/event-iterator@1.0.0": {
+      "integrity": "sha512-l6gCPsWJ8aRCe/s7/oCmero70kDHgIK5m4uJvYgwEYTqVxoBOIXbKr5tnkLqUHEg6mNduB4IWvms3h70Hp9ADQ==",
+      "dependencies": [
+        "yocto-queue"
+      ]
+    },
+    "@mary-ext/simple-event-emitter@1.0.1": {
+      "integrity": "sha512-9+VvZisxZ/gSg+JJH7hmXaA8Qj42Qjz3O58RSB+INYc8iLA0icATZxHB9vKbj59ojDGZjO3hCKzMXocx3L0H8w=="
+    },
     "@opentelemetry/api@1.9.1": {
       "integrity": "sha512-gLyJlPHPZYdAk1JENA9LeHejZe1Ti77/pTeFm/nMXmQH/HFZlcS/O2XJB+L8fkbrNSqhdtlvjBVjxwUYanNH5Q=="
     },
@@ -1096,16 +1118,6 @@
       "integrity": "sha512-Nd/SgG27WoA9e+/TdK74KnHz852TLa94ovOYySo/yMPuTmpckK/jIF2jSwS3g7ELSKXK13/cVdmg1Z/DaCWKxA==",
       "os": ["win32"],
       "cpu": ["x64"]
-    },
-    "@skyware/jetstream@0.2.5": {
-      "integrity": "sha512-fM/zs03DLwqRyzZZJFWN20e76KrdqIp97Tlm8Cek+vxn96+tu5d/fx79V6H85L0QN6HvGiX2l9A8hWFqHvYlOA==",
-      "dependencies": [
-        "@atcute/atproto",
-        "@atcute/bluesky",
-        "@atcute/lexicons",
-        "partysocket",
-        "tiny-emitter"
-      ]
     },
     "@standard-schema/spec@1.1.0": {
       "integrity": "sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w=="
@@ -1648,15 +1660,15 @@
     "sql-escaper@1.3.3": {
       "integrity": "sha512-BsTCV265VpTp8tm1wyIm1xqQCS+Q9NHx2Sr+WcnUrgLrQ6yiDIvHYJV5gHxsj1lMBy2zm5twLaZao8Jd+S8JJw=="
     },
-    "tiny-emitter@2.1.0": {
-      "integrity": "sha512-NB6Dk1A9xgQPMoGqC5CVXn123gWyte215ONT5Pp5a0yt4nlEoO1ZWeCwpncaekPHXO60i47ihFnZPiRPjRMq4Q=="
-    },
     "tinyglobby@0.2.16": {
       "integrity": "sha512-pn99VhoACYR8nFHhxqix+uvsbXineAasWm5ojXoN8xEwK5Kd3/TrhNn1wByuD52UxWRLy8pu+kRMniEi6Eq9Zg==",
       "dependencies": [
         "fdir",
         "picomatch@4.0.4"
       ]
+    },
+    "type-fest@4.41.0": {
+      "integrity": "sha512-TeTSQ6H5YHvpqVwBRcnLDCBnDOHWYu7IvGbHT6N8AOymcr9PJGjc1GTtiWZTYg0NCgYwvnYWEkVChQAr9bjfwA=="
     },
     "typescript@6.0.3": {
       "integrity": "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==",
@@ -1716,6 +1728,9 @@
     "yaml@2.8.3": {
       "integrity": "sha512-AvbaCLOO2Otw/lW5bmh9d/WEdcDFdQp2Z2ZUH3pX9U2ihyUY0nvLv7J6TrWowklRGPYbB/IuIMfYgxaCPg5Bpg==",
       "bin": true
+    },
+    "yocto-queue@1.2.2": {
+      "integrity": "sha512-4LCcse/U2MHZ63HAJVE+v71o7yOdIe4cZ70Wpf8D/IyjDKYQLV5GD46B+hSTjJsvV5PztjvHoU580EftxjDZFQ=="
     }
   },
   "workspace": {
@@ -1727,12 +1742,12 @@
       "jsr:@std/http@^1.1.0",
       "npm:@atcute/bluesky@^3.3.3",
       "npm:@atcute/client@^4.2.1",
+      "npm:@atcute/jetstream@^1.1.2",
       "npm:@atcute/lexicons@^1.3.0",
       "npm:@badgateway/oauth2-client@^3.3.1",
       "npm:@hey-api/openapi-ts@0.97",
       "npm:@hey-api/vite-plugin@~0.3.1",
       "npm:@preact/signals@^2.9.0",
-      "npm:@skyware/jetstream@~0.2.5",
       "npm:@subframe7536/iconv-lite@~0.8.1",
       "npm:jose@^6.2.3",
       "npm:mysql2@^3.22.3",

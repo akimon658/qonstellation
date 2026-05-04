@@ -1,4 +1,4 @@
-import { Generated } from "@kysely/kysely"
+import type { Generated } from "@kysely/kysely"
 
 export interface PostsTable {
   id: Generated<number>

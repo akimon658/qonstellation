@@ -1,3 +1,4 @@
+import { isDid } from "@atcute/lexicons/syntax"
 import { define } from "../../lib/define.ts"
 import {
   getUserSettingByUserId,
@@ -14,9 +15,9 @@ export const handler = define.handlers({
   PUT: async (ctx) => {
     const { did, targetChannelId } = await ctx.req.json()
 
-    if (typeof did !== "string" || typeof targetChannelId !== "string") {
+    if (!isDid(did) || typeof targetChannelId !== "string") {
       return Response.json(
-        { error: "did and targetChannelId are required" },
+        { error: "Invalid request body" },
         { status: 400 },
       )
     }
