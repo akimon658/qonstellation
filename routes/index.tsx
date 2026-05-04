@@ -11,7 +11,7 @@ export const handler = define.handlers({
       return page({
         loggedIn: true as const,
         did: setting?.did ?? "",
-        targetChannelId: setting?.targetChannelId ?? "",
+        targetChannelId: setting?.target_channel_id ?? "",
       })
     }
 
