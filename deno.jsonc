@@ -11,6 +11,7 @@
   "imports": {
     "@atcute/bluesky": "npm:@atcute/bluesky@^3.3.3",
     "@atcute/client": "npm:@atcute/client@^4.2.1",
+    "@atcute/jetstream": "npm:@atcute/jetstream@^1.1.2",
     "@atcute/lexicons": "npm:@atcute/lexicons@^1.3.0",
     "@badgateway/oauth2-client": "npm:@badgateway/oauth2-client@^3.3.1",
     "@fresh/plugin-vite": "jsr:@fresh/plugin-vite@^1.1.2",
@@ -18,7 +19,6 @@
     "@hey-api/vite-plugin": "npm:@hey-api/vite-plugin@^0.3.1",
     "@kysely/kysely": "jsr:@kysely/kysely@^0.28.16",
     "@preact/signals": "npm:@preact/signals@^2.9.0",
-    "@skyware/jetstream": "npm:@skyware/jetstream@^0.2.5",
     "@std/encoding": "jsr:@std/encoding@^1.0.10",
     "@std/http": "jsr:@std/http@^1.1.0",
     "@subframe7536/iconv-lite": "npm:@subframe7536/iconv-lite@^0.8.1",

@@ -1,3 +1,4 @@
+import type { Did } from "@atcute/lexicons"
 import { db } from "../database/db.ts"
 
 export const getAllDids = async () => {
@@ -13,7 +14,7 @@ interface UserSetting {
 }
 
 export const getUserSettingByDid = async (
-  did: string,
+  did: Did,
 ): Promise<UserSetting> => {
   const result = await db
     .selectFrom("user_settings")
@@ -38,7 +39,7 @@ export const getUserSettingByUserId = async (userId: string) => {
 
 export const saveUserSettings = async (
   userId: string,
-  did: string,
+  did: Did,
   targetChannelId: string,
 ) => {
   await db
