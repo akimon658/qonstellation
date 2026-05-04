@@ -177,11 +177,7 @@ export class JetstreamService {
   }
 
   async close() {
-    if (!this.stopResolve) {
-      throw new Error("JetstreamService is not running.")
-    }
-
-    this.stopResolve()
+    this.stopResolve?.()
     await this.loopPromise
 
     if (this.cursor) {
