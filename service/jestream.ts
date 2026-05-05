@@ -7,7 +7,6 @@ import {
 import { JetstreamSubscription } from "@atcute/jetstream"
 import { type Did, is } from "@atcute/lexicons"
 import { buildAtProtoUri } from "../lib/atProto.ts"
-import { buildMessageContent } from "../lib/buildMessageContent.ts"
 import { config } from "../lib/config.ts"
 import { uploadImages } from "../lib/image.ts"
 import { isSelfThread } from "../lib/thread.ts"
@@ -19,6 +18,7 @@ import { saveJetstreamCursor } from "../repository/systemState.ts"
 import { getUserAccessToken, getUserSettingByDid } from "../repository/user.ts"
 import { client } from "../traq/client.gen.ts"
 import { postMessage } from "../traq/index.ts"
+import { buildMessageContent } from "./messageBuilder.ts"
 
 client.setConfig({
   baseUrl: `${config.traqBaseUrl}/api/v3`,

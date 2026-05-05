@@ -4,9 +4,9 @@ import {
   type AppBskyFeedPost,
 } from "@atcute/bluesky"
 import { is, parseResourceUri } from "@atcute/lexicons"
+import { config } from "../lib/config.ts"
 import { getTraqMessageIdByAtProtoUri } from "../repository/post.ts"
 import { getMessages } from "../traq/sdk.gen.ts"
-import { config } from "./config.ts"
 
 interface BuildMessageParams {
   post: AppBskyFeedPost.Main
