@@ -7,9 +7,9 @@ import {
 import { JetstreamSubscription } from "@atcute/jetstream"
 import { type Did, is } from "@atcute/lexicons"
 import { buildAtProtoUri } from "../lib/atProto.ts"
-import { buildMessageContent } from "../lib/buildMessageContent.ts"
 import { config } from "../lib/config.ts"
 import { uploadImages } from "../lib/image.ts"
+import { isSelfThread } from "../lib/thread.ts"
 import {
   getTraqMessageIdByAtProtoUri,
   savePostMetadata,
@@ -18,6 +18,7 @@ import { saveJetstreamCursor } from "../repository/systemState.ts"
 import { getUserAccessToken, getUserSettingByDid } from "../repository/user.ts"
 import { client } from "../traq/client.gen.ts"
 import { postMessage } from "../traq/index.ts"
+import { MessageBuilder } from "./messageBuilder.ts"
 
 client.setConfig({
   baseUrl: `${config.traqBaseUrl}/api/v3`,
@@ -90,14 +91,16 @@ export class JetstreamService {
             userDid: event.did,
             recordKey: event.commit.rkey,
           })
-          const isReply = !!event.commit.record.reply?.parent
 
           if (
             is(AppBskyEmbedVideo.mainSchema, event.commit.record.embed) ||
-            isReply
+            !(await isSelfThread({
+              post: event.commit.record,
+              authorDid: event.did,
+            }))
           ) {
             console.warn(
-              `Skipping post ${atProtoUri} because it has video or is a reply.`,
+              `Skipping post ${atProtoUri} because it has video or is not a self thread`,
             )
 
             this.cursor = event.time_us
@@ -145,6 +148,10 @@ export class JetstreamService {
             )
           }
 
+          const messageBuilder = new MessageBuilder({
+            traqAccessToken: accessToken,
+            targetChannelId: userSetting.targetChannelId,
+          })
           const { data, error } = await postMessage({
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -153,7 +160,7 @@ export class JetstreamService {
               channelId: userSetting.targetChannelId,
             },
             body: {
-              content: await buildMessageContent({
+              content: await messageBuilder.build({
                 imageIds,
                 post: event.commit.record,
               }),

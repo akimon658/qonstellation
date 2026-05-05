@@ -16,6 +16,18 @@ if (!traqClientSecret) {
   throw new Error("TRAQ_CLIENT_SECRET is not set")
 }
 
+const blueskyAccountIdentifier = Deno.env.get("BLUESKY_ACCOUNT_IDENTIFIER")
+
+if (!blueskyAccountIdentifier) {
+  throw new Error("BLUESKY_ACCOUNT_IDENTIFIER is not set")
+}
+
+const blueskyAppPassword = Deno.env.get("BLUESKY_APP_PASSWORD")
+
+if (!blueskyAppPassword) {
+  throw new Error("BLUESKY_APP_PASSWORD is not set")
+}
+
 export const config = {
   qonstellationJwtSecret,
   dbHost: Deno.env.get("DB_HOST") ?? "localhost",
@@ -26,4 +38,6 @@ export const config = {
   traqBaseUrl: Deno.env.get("TRAQ_BASE_URL") ?? "http://localhost:3000",
   traqClientId,
   traqClientSecret,
+  blueskyAccountIdentifier,
+  blueskyAppPassword,
 } as const
