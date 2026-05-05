@@ -18,7 +18,7 @@ import { saveJetstreamCursor } from "../repository/systemState.ts"
 import { getUserAccessToken, getUserSettingByDid } from "../repository/user.ts"
 import { client } from "../traq/client.gen.ts"
 import { postMessage } from "../traq/index.ts"
-import { buildMessageContent } from "./messageBuilder.ts"
+import { MessageBuilder } from "./messageBuilder.ts"
 
 client.setConfig({
   baseUrl: `${config.traqBaseUrl}/api/v3`,
@@ -148,6 +148,10 @@ export class JetstreamService {
             )
           }
 
+          const messageBuilder = new MessageBuilder({
+            traqAccessToken: accessToken,
+            targetChannelId: userSetting.targetChannelId,
+          })
           const { data, error } = await postMessage({
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -156,11 +160,9 @@ export class JetstreamService {
               channelId: userSetting.targetChannelId,
             },
             body: {
-              content: await buildMessageContent({
+              content: await messageBuilder.build({
                 imageIds,
                 post: event.commit.record,
-                targetChannelId: userSetting.targetChannelId,
-                traqAccessToken: accessToken,
               }),
             },
           })
