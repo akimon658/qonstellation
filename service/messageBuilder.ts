@@ -80,7 +80,7 @@ export class MessageBuilder {
     }
 
     if (post.reply) {
-      let urlToAppend = ""
+      let urlToAppend: string | undefined
       const traqMessageId = await getTraqMessageIdByAtProtoUri(
         post.reply.parent.uri,
       )
@@ -108,7 +108,9 @@ export class MessageBuilder {
         urlToAppend = getBlueskyPostUrl(post.reply.parent.uri)
       }
 
-      text = text ? `${text}\n${urlToAppend}` : urlToAppend
+      if (urlToAppend) {
+        text = text ? `${text}\n${urlToAppend}` : urlToAppend
+      }
     }
 
     if (
