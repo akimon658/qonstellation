@@ -5,18 +5,21 @@ import {
 } from "@atcute/bluesky"
 import { is, parseResourceUri } from "@atcute/lexicons"
 import { getTraqMessageIdByAtProtoUri } from "../repository/post.ts"
+import { getMessages } from "../traq/sdk.gen.ts"
 import { config } from "./config.ts"
 
 interface BuildMessageParams {
   post: AppBskyFeedPost.Main
   imageIds?: string[]
+  targetChannelId: string
+  traqAccessToken: string
 }
 
 const encoder = new TextEncoder()
 const decoder = new TextDecoder()
 
 export const buildMessageContent = async (
-  { post, imageIds }: BuildMessageParams,
+  { post, imageIds, targetChannelId, traqAccessToken }: BuildMessageParams,
 ) => {
   let text = post.text
 
@@ -60,6 +63,47 @@ export const buildMessageContent = async (
       .join("\n")
 
     text = text ? `${text}\n${imageLinks}` : imageLinks
+  }
+
+  if (post.reply) {
+    let urlToAppend = ""
+    const traqMessageId = await getTraqMessageIdByAtProtoUri(
+      post.reply.parent.uri,
+    )
+
+    if (traqMessageId) {
+      const latestMessageInChannel = await getMessages({
+        headers: {
+          Authorization: `Bearer ${traqAccessToken}`,
+        },
+        path: {
+          channelId: targetChannelId,
+        },
+        query: {
+          limit: 1,
+        },
+      })
+      const shouldAppendUrl =
+        latestMessageInChannel.data?.at(0)?.id !== traqMessageId
+
+      if (shouldAppendUrl) {
+        urlToAppend = `${config.traqBaseUrl}/messages/${traqMessageId}`
+      }
+    } else {
+      // This message is not posted to traQ, so we should append the URL to the original post
+      const parentUri = parseResourceUri(post.reply.parent.uri)
+
+      if (parentUri.ok) {
+        urlToAppend =
+          `https://bsky.app/profile/${parentUri.value.repo}/post/${parentUri.value.rkey}`
+      } else {
+        throw new Error("Invalid parent post URI", {
+          cause: parentUri.error,
+        })
+      }
+    }
+
+    text = text ? `${text}\n${urlToAppend}` : urlToAppend
   }
 
   if (

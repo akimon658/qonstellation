@@ -1,14 +1,9 @@
+/// <reference types="@atcute/atproto" />
 import type { AppBskyEmbedImages } from "@atcute/bluesky"
-import { Client, simpleFetchHandler } from "@atcute/client"
 import { type Did } from "@atcute/lexicons"
 import { isLegacyBlob } from "@atcute/lexicons/interfaces"
 import { postFile } from "../traq/index.ts"
-
-const client = new Client({
-  handler: simpleFetchHandler({
-    service: "https://bsky.social",
-  }),
-})
+import { client } from "./blueskyClient.ts"
 
 interface UploadImageParams {
   accessToken: string
@@ -40,12 +35,6 @@ export const uploadImages = async (
       if (!ok) {
         throw new Error(
           `Failed to download image: ${imageMeta.image.ref.$link}`,
-        )
-      }
-
-      if (!(downloadRes instanceof Blob)) {
-        throw new Error(
-          `Unexpected response type when downloading image: ${imageMeta.image.ref.$link}`,
         )
       }
 

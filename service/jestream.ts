@@ -10,6 +10,7 @@ import { buildAtProtoUri } from "../lib/atProto.ts"
 import { buildMessageContent } from "../lib/buildMessageContent.ts"
 import { config } from "../lib/config.ts"
 import { uploadImages } from "../lib/image.ts"
+import { isSelfThread } from "../lib/thread.ts"
 import {
   getTraqMessageIdByAtProtoUri,
   savePostMetadata,
@@ -90,14 +91,16 @@ export class JetstreamService {
             userDid: event.did,
             recordKey: event.commit.rkey,
           })
-          const isReply = !!event.commit.record.reply?.parent
 
           if (
             is(AppBskyEmbedVideo.mainSchema, event.commit.record.embed) ||
-            isReply
+            !isSelfThread({
+              post: event.commit.record,
+              authorDid: event.did,
+            })
           ) {
             console.warn(
-              `Skipping post ${atProtoUri} because it has video or is a reply.`,
+              `Skipping post ${atProtoUri} because it has video or is not a self thread`,
             )
 
             this.cursor = event.time_us
@@ -156,6 +159,8 @@ export class JetstreamService {
               content: await buildMessageContent({
                 imageIds,
                 post: event.commit.record,
+                targetChannelId: userSetting.targetChannelId,
+                traqAccessToken: accessToken,
               }),
             },
           })

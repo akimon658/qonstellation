@@ -35,11 +35,13 @@
     "jsr:@std/semver@^1.0.6": "1.0.8",
     "jsr:@std/streams@^1.1.0": "1.1.0",
     "jsr:@std/uuid@^1.0.9": "1.1.1",
+    "npm:@atcute/atproto@^3.1.11": "3.1.11",
     "npm:@atcute/bluesky@^3.3.3": "3.3.3",
     "npm:@atcute/client@^4.2.1": "4.2.1",
     "npm:@atcute/jetstream@*": "1.1.2",
     "npm:@atcute/jetstream@^1.1.2": "1.1.2",
     "npm:@atcute/lexicons@^1.3.0": "1.3.0",
+    "npm:@atcute/password-session@0.1": "0.1.0",
     "npm:@babel/core@^7.28.0": "7.29.0",
     "npm:@babel/preset-react@^7.27.1": "7.28.5_@babel+core@7.29.0",
     "npm:@badgateway/oauth2-client@^3.3.1": "3.3.1",
@@ -254,6 +256,14 @@
         "@atcute/util-text",
         "@standard-schema/spec",
         "esm-env"
+      ]
+    },
+    "@atcute/password-session@0.1.0": {
+      "integrity": "sha512-r4iUNT7aQ1J6XXGO+pu39037hFQd0GYEhOuw/aykoNI3HHFLX2t5YyrxWTu5uKMGECk3s7zEgc8B8ol9JsMjRA==",
+      "dependencies": [
+        "@atcute/client",
+        "@atcute/identity",
+        "@atcute/lexicons"
       ]
     },
     "@atcute/uint8array@1.1.1": {
@@ -1740,10 +1750,12 @@
       "jsr:@kysely/kysely@~0.28.16",
       "jsr:@std/encoding@^1.0.10",
       "jsr:@std/http@^1.1.0",
+      "npm:@atcute/atproto@^3.1.11",
       "npm:@atcute/bluesky@^3.3.3",
       "npm:@atcute/client@^4.2.1",
       "npm:@atcute/jetstream@^1.1.2",
       "npm:@atcute/lexicons@^1.3.0",
+      "npm:@atcute/password-session@0.1",
       "npm:@badgateway/oauth2-client@^3.3.1",
       "npm:@hey-api/openapi-ts@0.97",
       "npm:@hey-api/vite-plugin@~0.3.1",
