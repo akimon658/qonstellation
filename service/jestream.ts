@@ -94,10 +94,10 @@ export class JetstreamService {
 
           if (
             is(AppBskyEmbedVideo.mainSchema, event.commit.record.embed) ||
-            !isSelfThread({
+            !(await isSelfThread({
               post: event.commit.record,
               authorDid: event.did,
-            })
+            }))
           ) {
             console.warn(
               `Skipping post ${atProtoUri} because it has video or is not a self thread`,
