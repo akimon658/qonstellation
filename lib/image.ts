@@ -14,8 +14,6 @@ import { client } from "./blueskyClient.ts"
 
 const TRAQ_IMAGE_MAX_PIXELS = 2560 * 1600
 
-await initializeImageMagick(wasmBytes)
-
 interface UploadImageParams {
   accessToken: string
   did: Did
@@ -74,7 +72,11 @@ const isUint8ArrayOfArrayBuffer = (
   data: Uint8Array,
 ): data is Uint8Array<ArrayBuffer> => data.buffer instanceof ArrayBuffer
 
+const initMagickPromise = initializeImageMagick(wasmBytes)
+
 const resizeImage = async (imageBlob: Blob) => {
+  await initMagickPromise
+
   const bytes = ImageMagick.read(await imageBlob.bytes(), (image) => {
     const imagePixels = image.height * image.width
 
