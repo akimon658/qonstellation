@@ -2,8 +2,19 @@
 import type { AppBskyEmbedImages } from "@atcute/bluesky"
 import { type Did } from "@atcute/lexicons"
 import { isLegacyBlob } from "@atcute/lexicons/interfaces"
+import {
+  ImageMagick,
+  initializeImageMagick,
+  MagickFormat,
+} from "@imagemagick/magick-wasm"
+// @ts-ignore: Handled by custom Vite plugin
+import wasmBytes from "@imagemagick/magick-wasm/magick.wasm"
 import { postFile } from "../traq/index.ts"
 import { client } from "./blueskyClient.ts"
+
+const TRAQ_IMAGE_MAX_PIXELS = 2560 * 1600
+
+await initializeImageMagick(wasmBytes)
 
 interface UploadImageParams {
   accessToken: string
@@ -38,13 +49,15 @@ export const uploadImages = async (
         )
       }
 
+      const resizedImage = resizeImage(await downloadRes.bytes())
+
       const { data: uploadedFile } = await postFile({
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
         body: {
           channelId: targetChannelId,
-          file: downloadRes,
+          file: new Blob([resizedImage], { type: "image/webp" }),
         },
       })
 
@@ -57,4 +70,32 @@ export const uploadImages = async (
   )
 
   return imageIds
+}
+
+const isUint8ArrayOfArrayBuffer = (
+  data: Uint8Array,
+): data is Uint8Array<ArrayBuffer> => data.buffer instanceof ArrayBuffer
+
+const resizeImage = (imageBytes: Uint8Array<ArrayBuffer>) => {
+  return ImageMagick.read(imageBytes, (image) => {
+    const imagePixels = image.height * image.width
+
+    if (imagePixels <= TRAQ_IMAGE_MAX_PIXELS) {
+      return imageBytes
+    }
+
+    const scale = Math.sqrt(TRAQ_IMAGE_MAX_PIXELS / imagePixels)
+    const newHeight = Math.floor(image.height * scale)
+    const newWidth = Math.floor(image.width * scale)
+
+    image.resize(newWidth, newHeight)
+
+    return image.write(MagickFormat.WebP, (data) => {
+      if (isUint8ArrayOfArrayBuffer(data)) {
+        return data
+      }
+
+      throw new Error("Unexpected data type from ImageMagick")
+    })
+  })
 }

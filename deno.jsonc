@@ -19,6 +19,7 @@
     "@fresh/plugin-vite": "jsr:@fresh/plugin-vite@^1.1.2",
     "@hey-api/openapi-ts": "npm:@hey-api/openapi-ts@^0.97.0",
     "@hey-api/vite-plugin": "npm:@hey-api/vite-plugin@^0.3.1",
+    "@imagemagick/magick-wasm": "npm:@imagemagick/magick-wasm@^0.0.40",
     "@kysely/kysely": "jsr:@kysely/kysely@^0.28.16",
     "@preact/signals": "npm:@preact/signals@^2.9.0",
     "@std/encoding": "jsr:@std/encoding@^1.0.10",
