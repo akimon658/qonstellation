@@ -49,15 +49,13 @@ export const uploadImages = async (
         )
       }
 
-      const resizedImage = resizeImage(await downloadRes.bytes())
-
       const { data: uploadedFile } = await postFile({
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
         body: {
           channelId: targetChannelId,
-          file: new Blob([resizedImage], { type: "image/webp" }),
+          file: await resizeImage(downloadRes),
         },
       })
 
@@ -76,19 +74,17 @@ const isUint8ArrayOfArrayBuffer = (
   data: Uint8Array,
 ): data is Uint8Array<ArrayBuffer> => data.buffer instanceof ArrayBuffer
 
-const resizeImage = (imageBytes: Uint8Array<ArrayBuffer>) => {
-  return ImageMagick.read(imageBytes, (image) => {
+const resizeImage = async (imageBlob: Blob) => {
+  const bytes = ImageMagick.read(await imageBlob.bytes(), (image) => {
     const imagePixels = image.height * image.width
 
-    if (imagePixels <= TRAQ_IMAGE_MAX_PIXELS) {
-      return imageBytes
+    if (imagePixels > TRAQ_IMAGE_MAX_PIXELS) {
+      const scale = Math.sqrt(TRAQ_IMAGE_MAX_PIXELS / imagePixels)
+      const newHeight = Math.floor(image.height * scale)
+      const newWidth = Math.floor(image.width * scale)
+
+      image.resize(newWidth, newHeight)
     }
-
-    const scale = Math.sqrt(TRAQ_IMAGE_MAX_PIXELS / imagePixels)
-    const newHeight = Math.floor(image.height * scale)
-    const newWidth = Math.floor(image.width * scale)
-
-    image.resize(newWidth, newHeight)
 
     return image.write(MagickFormat.WebP, (data) => {
       if (isUint8ArrayOfArrayBuffer(data)) {
@@ -98,4 +94,6 @@ const resizeImage = (imageBytes: Uint8Array<ArrayBuffer>) => {
       throw new Error("Unexpected data type from ImageMagick")
     })
   })
+
+  return new Blob([bytes], { type: "image/webp" })
 }
