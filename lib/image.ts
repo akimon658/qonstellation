@@ -80,8 +80,8 @@ const resizeImage = async (imageBlob: Blob) => {
 
     if (imagePixels > TRAQ_IMAGE_MAX_PIXELS) {
       const scale = Math.sqrt(TRAQ_IMAGE_MAX_PIXELS / imagePixels)
-      const newHeight = Math.floor(image.height * scale)
-      const newWidth = Math.floor(image.width * scale)
+      const newHeight = Math.max(1, Math.floor(image.height * scale))
+      const newWidth = Math.max(1, Math.floor(image.width * scale))
 
       image.resize(newWidth, newHeight)
     }
