@@ -7,8 +7,9 @@ import {
   initializeImageMagick,
   MagickFormat,
 } from "@imagemagick/magick-wasm"
-// @ts-ignore: Handled by custom Vite plugin
-import wasmBytes from "@imagemagick/magick-wasm/magick.wasm"
+import wasmBytes from "@imagemagick/magick-wasm/magick.wasm" with {
+  type: "bytes"
+}
 import { postFile } from "../traq/index.ts"
 import { client } from "./blueskyClient.ts"
 
