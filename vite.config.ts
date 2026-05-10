@@ -31,14 +31,17 @@ const wasmPlugin = (): Plugin => {
 
       return WASM_ID_PREFIX + resolved.id
     },
-    load: (id) => {
+    load: async (id) => {
       if (!id.startsWith(WASM_ID_PREFIX)) {
         return null
       }
 
       const path = id.slice(WASM_ID_PREFIX.length)
+      const bytes = await Deno.readFile(path)
 
-      return `export default await Deno.readFile(${JSON.stringify(path)})`
+      return `export default new Uint8Array(${
+        JSON.stringify(Array.from(bytes))
+      })`
     },
   }
 }
