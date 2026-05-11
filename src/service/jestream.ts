@@ -6,6 +6,7 @@ import {
 } from "@atcute/bluesky"
 import { JetstreamSubscription } from "@atcute/jetstream"
 import { type Did, is } from "@atcute/lexicons"
+import { debounce } from "@std/async"
 import { buildAtProtoUri } from "../lib/atProto.ts"
 import { config } from "../lib/config.ts"
 import { uploadImages } from "../lib/image.ts"
@@ -20,19 +21,19 @@ import { client } from "../traq/client.gen.ts"
 import { postMessage } from "../traq/index.ts"
 import { MessageBuilder } from "./messageBuilder.ts"
 
+const UPDATE_CURSOR_DEBOUNCE_MS = 30000
+
 client.setConfig({
   baseUrl: `${config.traqBaseUrl}/api/v3`,
 })
 
 export class JetstreamService {
   private subscription: JetstreamSubscription
-  private cursor?: number
   private readonly subscribingDids: Did[]
   private stopResolve?: () => void
   private loopPromise?: Promise<void>
 
   constructor(opts: { wantedDids: Did[]; cursor?: number }) {
-    this.cursor = opts.cursor
     this.subscribingDids = opts.wantedDids
     this.subscription = new JetstreamSubscription({
       url: [
@@ -46,6 +47,11 @@ export class JetstreamService {
       cursor: opts.cursor,
     })
   }
+
+  private updateCursor = debounce(
+    saveJetstreamCursor,
+    UPDATE_CURSOR_DEBOUNCE_MS,
+  )
 
   private async runLoop(): Promise<void> {
     const stopPromise = new Promise<void>((resolve) => {
@@ -73,7 +79,8 @@ export class JetstreamService {
         const event = result.value
 
         if (event.kind !== "commit" || event.commit.operation !== "create") {
-          this.cursor = event.time_us
+          console.debug("Skipping non-create commit event", event.did)
+          this.updateCursor(event.time_us)
 
           continue
         }
@@ -81,8 +88,7 @@ export class JetstreamService {
         try {
           if (!is(AppBskyFeedPost.mainSchema, event.commit.record)) {
             console.warn("Invalid record", event.commit.record)
-
-            this.cursor = event.time_us
+            this.updateCursor(event.time_us)
 
             continue
           }
@@ -102,8 +108,7 @@ export class JetstreamService {
             console.warn(
               `Skipping post ${atProtoUri} because it has video or is not a self thread`,
             )
-
-            this.cursor = event.time_us
+            this.updateCursor(event.time_us)
 
             continue
           }
@@ -112,8 +117,10 @@ export class JetstreamService {
 
           if (traqMessageId) {
             // This message is already posted to traQ
-
-            this.cursor = event.time_us
+            console.warn(
+              `Skipping post ${atProtoUri} because it is already posted to traQ with message ID ${traqMessageId}`,
+            )
+            this.updateCursor(event.time_us)
 
             continue
           }
@@ -175,8 +182,8 @@ export class JetstreamService {
             atProtoUri,
             traqMessageId: data.id,
           })
-
-          this.cursor = event.time_us
+          console.info(`Posted message for post ${atProtoUri} to traQ`)
+          this.updateCursor(event.time_us)
         } catch (err) {
           console.error("Error handling Jetstream event:", err)
         }
@@ -198,9 +205,6 @@ export class JetstreamService {
   async close() {
     this.stopResolve?.()
     await this.loopPromise
-
-    if (this.cursor) {
-      await saveJetstreamCursor(this.cursor)
-    }
+    this.updateCursor.flush()
   }
 }
