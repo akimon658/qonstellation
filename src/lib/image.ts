@@ -7,9 +7,6 @@ import {
   initializeImageMagick,
   MagickFormat,
 } from "@imagemagick/magick-wasm"
-import wasmBytes from "@imagemagick/magick-wasm/magick.wasm" with {
-  type: "bytes"
-}
 import { postFile } from "../traq/index.ts"
 import { client } from "./blueskyClient.ts"
 
@@ -73,7 +70,13 @@ const isUint8ArrayOfArrayBuffer = (
   data: Uint8Array,
 ): data is Uint8Array<ArrayBuffer> => data.buffer instanceof ArrayBuffer
 
-const initMagickPromise = initializeImageMagick(wasmBytes)
+const wasmUrl = import.meta.env.DEV
+  ? new URL(import.meta.resolve("@imagemagick/magick-wasm/magick.wasm"))
+  : new URL("./magick.wasm", import.meta.url)
+// `initializeImageMagick` accepts URL, but does not support protocols other than http(s).
+// So we fetch the wasm file ourselves.
+const initMagickPromise = fetch(wasmUrl).then((res) => res.arrayBuffer())
+  .then((buf) => initializeImageMagick(buf))
 
 const resizeImage = async (imageBlob: Blob) => {
   await initMagickPromise

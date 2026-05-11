@@ -16,10 +16,10 @@ RUN --mount=type=cache,target=/deno-dir/ \
 FROM ghcr.io/denoland/deno:distroless-2.7.14
 
 WORKDIR /app
-COPY --from=builder /app/dist/ ./
+COPY --from=builder /app/_fresh/ ./
 
 EXPOSE 8000
 ARG GIT_REVISION
 ENV DENO_DEPLOYMENT_ID=${GIT_REVISION}
 
-CMD ["serve", "--allow-env", "--allow-net", "--allow-read", "./server.js"]
+CMD ["serve", "--allow-env", "--allow-net", "--allow-read", "/app/server.js"]
