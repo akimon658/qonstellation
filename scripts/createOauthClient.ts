@@ -1,5 +1,5 @@
-import { client } from "../traq/client.gen.ts"
-import { createClient, login } from "../traq/index.ts"
+import { client } from "../src/traq/client.gen.ts"
+import { createClient, login } from "../src/traq/index.ts"
 
 client.setConfig({
   baseUrl: "http://localhost:3000/api/v3",
@@ -22,7 +22,7 @@ const clientRes = await createClient({
   body: {
     name: "Qonstellation",
     description: "Test Client",
-    callbackUrl: "http://localhost:5173/callback",
+    callbackUrl: "http://localhost:8000/callback",
     scopes: ["read", "write"],
   },
   headers: {

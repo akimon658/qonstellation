@@ -38,7 +38,7 @@
   },
   "tasks": {
     "build": "deno run -A scripts/dev.ts build",
-    "create-local-client": "deno run -A scripts/createOauthClient.ts >> .env",
+    "create-local-client": "deno run -A scripts/createOauthClient.ts",
     "dev": "deno run --env-file -A scripts/dev.ts"
   },
   "unstable": [
