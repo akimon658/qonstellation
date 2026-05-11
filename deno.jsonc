@@ -42,6 +42,7 @@
     "dev": "deno run --env-file -A scripts/dev.ts"
   },
   "unstable": [
+    "bundle",
     "raw-imports", // magick-wasm (compiled by Emscripten) requires file URL or raw bytes import
     "sloppy-imports" // Required for generated traQ client code
   ]

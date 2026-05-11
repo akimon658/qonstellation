@@ -14,6 +14,12 @@ const builder = new Builder({
 
 if (Deno.args.includes("build")) {
   await builder.build()
+  await Deno.bundle({
+    codeSplitting: true,
+    entrypoints: ["./_fresh/server.js"],
+    outputDir: "./dist",
+    platform: "deno",
+  })
 } else {
   await builder.listen(() => import("../src/main.ts"))
 }
