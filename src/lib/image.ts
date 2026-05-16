@@ -84,7 +84,7 @@ const initMagickPromise = fetch(wasmUrl).then((res) => res.arrayBuffer())
 const resizeImage = async (imageBlob: Blob) => {
   await initMagickPromise
 
-  const bytes = ImageMagick.read(await imageBlob.bytes(), (image) => {
+  return ImageMagick.read(await imageBlob.bytes(), (image) => {
     const imagePixels = image.height * image.width
 
     if (imagePixels > TRAQ_IMAGE_MAX_PIXELS) {
@@ -97,12 +97,10 @@ const resizeImage = async (imageBlob: Blob) => {
 
     return image.write(MagickFormat.WebP, (data) => {
       if (isUint8ArrayOfArrayBuffer(data)) {
-        return data
+        return new Blob([data], { type: "image/webp" })
       }
 
       throw new Error("Unexpected data type from ImageMagick")
     })
   })
-
-  return new Blob([bytes], { type: "image/webp" })
 }
