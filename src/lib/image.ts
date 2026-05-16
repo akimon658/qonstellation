@@ -71,7 +71,10 @@ const isUint8ArrayOfArrayBuffer = (
 ): data is Uint8Array<ArrayBuffer> => data.buffer instanceof ArrayBuffer
 
 const wasmUrl = import.meta.env.DEV
-  ? new URL(import.meta.resolve("@imagemagick/magick-wasm/magick.wasm"))
+  ? new URL(
+    "../../node_modules/@imagemagick/magick-wasm/dist/magick.wasm",
+    import.meta.url,
+  )
   : new URL("./magick.wasm", import.meta.url)
 // `initializeImageMagick` accepts URL, but does not support protocols other than http(s).
 // So we fetch the wasm file ourselves.
