@@ -6,6 +6,7 @@ import { viteStaticCopy } from "vite-plugin-static-copy"
 export default defineConfig({
   plugins: [
     fresh({
+      routeDir: "./src/routes",
       serverEntry: "./src/main.ts",
     }),
     heyApiPlugin({
