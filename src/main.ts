@@ -7,13 +7,15 @@ import { getAllDids } from "./repository/user.ts"
 import { JetstreamService } from "./service/jestream.ts"
 
 const migrator = new Migrator({ db, provider: migrationProvider })
-const { error } = await migrator.migrateToLatest()
+const { error, results } = await migrator.migrateToLatest()
 
 if (error) {
   throw error
 }
 
-console.log("Database migrated")
+if (results && results.length > 0) {
+  console.log("Database migrated")
+}
 
 export const app = new App().use(staticFiles()).fsRoutes()
 const jetstreamService = new JetstreamService({
