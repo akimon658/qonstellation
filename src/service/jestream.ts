@@ -1,25 +1,14 @@
-import {
-  AppBskyEmbedImages,
-  AppBskyEmbedRecordWithMedia,
-  AppBskyEmbedVideo,
-  AppBskyFeedPost,
-} from "@atcute/bluesky"
+import { AppBskyEmbedVideo, AppBskyFeedPost } from "@atcute/bluesky"
 import { JetstreamSubscription } from "@atcute/jetstream"
 import { type Did, is } from "@atcute/lexicons"
 import { debounce } from "@std/async"
 import { buildAtProtoUri } from "../lib/atProto.ts"
 import { config } from "../lib/config.ts"
-import { uploadImages } from "../lib/image.ts"
 import { isSelfThread } from "../lib/thread.ts"
-import {
-  getTraqMessageIdByAtProtoUri,
-  savePostMetadata,
-} from "../repository/post.ts"
+import { addQueuedEvent } from "../repository/queuedEvent.ts"
 import { saveJetstreamCursor } from "../repository/systemState.ts"
-import { getUserAccessToken, getUserSettingByDid } from "../repository/user.ts"
 import { client } from "../traq/client.gen.ts"
-import { postMessage } from "../traq/index.ts"
-import { MessageBuilder } from "./messageBuilder.ts"
+import { EventQueueWorker } from "./eventQueueWorker.ts"
 
 const UPDATE_CURSOR_DEBOUNCE_MS = 30000
 
@@ -30,8 +19,10 @@ client.setConfig({
 export class JetstreamService {
   private subscription: JetstreamSubscription
   private readonly subscribingDids: Did[]
+  private eventQueueWorker = new EventQueueWorker()
   private stopResolve?: () => void
   private loopPromise?: Promise<void>
+  private workerPromise?: Promise<void>
 
   constructor(opts: { wantedDids: Did[]; cursor?: number }) {
     this.subscribingDids = opts.wantedDids
@@ -113,76 +104,8 @@ export class JetstreamService {
             continue
           }
 
-          const traqMessageId = await getTraqMessageIdByAtProtoUri(atProtoUri)
-
-          if (traqMessageId) {
-            // This message is already posted to traQ
-            console.warn(
-              `Skipping post ${atProtoUri} because it is already posted to traQ with message ID ${traqMessageId}`,
-            )
-            this.updateCursor(event.time_us)
-
-            continue
-          }
-
-          const userSetting = await getUserSettingByDid(event.did)
-          const accessToken = await getUserAccessToken(userSetting.userId)
-          let images: AppBskyEmbedImages.Image[] | undefined
-          let imageIds: string[] | undefined
-
-          if (is(AppBskyEmbedImages.mainSchema, event.commit.record.embed)) {
-            images = event.commit.record.embed.images
-          } else if (
-            is(
-              AppBskyEmbedRecordWithMedia.mainSchema,
-              event.commit.record.embed,
-            ) &&
-            is(AppBskyEmbedImages.mainSchema, event.commit.record.embed.media)
-          ) {
-            images = event.commit.record.embed.media.images
-          }
-
-          if (images?.length) {
-            imageIds = await uploadImages({
-              accessToken,
-              did: event.did,
-              images: images,
-              targetChannelId: userSetting.targetChannelId,
-            })
-
-            console.debug(
-              `Uploaded images for post ${atProtoUri}: ${imageIds}`,
-            )
-          }
-
-          const messageBuilder = new MessageBuilder({
-            traqAccessToken: accessToken,
-            targetChannelId: userSetting.targetChannelId,
-          })
-          const { data, error } = await postMessage({
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-            path: {
-              channelId: userSetting.targetChannelId,
-            },
-            body: {
-              content: await messageBuilder.build({
-                imageIds,
-                post: event.commit.record,
-              }),
-            },
-          })
-
-          if (!data) {
-            throw new Error("Failed to post message to traQ", { cause: error })
-          }
-
-          await savePostMetadata({
-            atProtoUri,
-            traqMessageId: data.id,
-          })
-          console.info(`Posted message for post ${atProtoUri} to traQ`)
+          await addQueuedEvent(event)
+          this.eventQueueWorker.notify()
           this.updateCursor(event.time_us)
         } catch (err) {
           console.error("Error handling Jetstream event:", err)
@@ -199,12 +122,15 @@ export class JetstreamService {
       return
     }
 
+    this.workerPromise = this.eventQueueWorker.start()
     this.loopPromise = this.runLoop()
   }
 
   async close() {
     this.stopResolve?.()
     await this.loopPromise
+    this.eventQueueWorker.stop()
+    await this.workerPromise
     this.updateCursor.flush()
   }
 }
