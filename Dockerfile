@@ -1,5 +1,5 @@
 #syntax=docker/dockerfile:1
-FROM ghcr.io/denoland/deno:debian-2.7.14 AS builder
+FROM ghcr.io/denoland/deno:debian-2.8.1@sha256:ddaad47cbbbbd856d73bd0d50074a0e308c51671d83442eebb15f1039dd4a822 AS builder
 
 WORKDIR /app
 
@@ -13,7 +13,7 @@ COPY . .
 RUN --mount=type=cache,target=/deno-dir/ \
     deno task build
 
-FROM ghcr.io/denoland/deno:distroless-2.7.14
+FROM ghcr.io/denoland/deno:distroless-2.8.1@sha256:2005d7c2aed55c198dcf97df5a3d4d1926a87a80b5bb8b5175a607b18b319f7b
 
 WORKDIR /app
 COPY --from=builder /app/_fresh/ ./
