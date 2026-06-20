@@ -40,4 +40,6 @@ export const config = {
   traqClientSecret,
   blueskyAccountIdentifier,
   blueskyAppPassword,
+  blueskyHostingProvider: Deno.env.get("BLUESKY_HOSTING_PROVIDER") ??
+    "https://bsky.social",
 } as const
