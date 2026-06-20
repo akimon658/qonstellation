@@ -19,6 +19,7 @@
     "@fresh/plugin-vite": "jsr:@fresh/plugin-vite@^1.1.2",
     "@hey-api/openapi-ts": "npm:@hey-api/openapi-ts@^0.97.0",
     "@hey-api/vite-plugin": "npm:@hey-api/vite-plugin@^0.3.1",
+    "@imagemagick/magick-wasm": "npm:@imagemagick/magick-wasm@^0.0.40",
     "@kysely/kysely": "jsr:@kysely/kysely@^0.28.16",
     "@preact/signals": "npm:@preact/signals@^2.9.0",
     "@std/async": "jsr:@std/async@^1.3.0",
@@ -26,11 +27,11 @@
     "@std/http": "jsr:@std/http@^1.1.0",
     "@subframe7536/iconv-lite": "npm:@subframe7536/iconv-lite@^0.8.1",
     "fresh": "jsr:@fresh/core@^2.3.3",
-    "image-size": "npm:image-size@^2.0.2",
     "jose": "npm:jose@^6.2.3",
     "mysql2": "npm:mysql2@^3.22.3",
     "preact": "npm:preact@^10.29.1",
-    "vite": "npm:vite@^7.3.2"
+    "vite": "npm:vite@^7.3.2",
+    "vite-plugin-static-copy": "npm:vite-plugin-static-copy@^4.1.0"
   },
   "lint": {
     "rules": {
