@@ -4,7 +4,7 @@ import { config } from "./config.ts"
 
 export const client = new Client({
   handler: await PasswordSession.login({
-    service: "https://bsky.social",
+    service: config.blueskyHostingProvider,
     identifier: config.blueskyAccountIdentifier,
     password: config.blueskyAppPassword,
   }),
