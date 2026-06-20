@@ -2,7 +2,11 @@
 import type { AppBskyEmbedImages } from "@atcute/bluesky"
 import { type Did } from "@atcute/lexicons"
 import { isLegacyBlob } from "@atcute/lexicons/interfaces"
-import { imageSize } from "image-size"
+import {
+  ImageMagick,
+  initializeImageMagick,
+  MagickFormat,
+} from "@imagemagick/magick-wasm"
 import { postFile } from "../traq/index.ts"
 import { client } from "./blueskyClient.ts"
 
@@ -62,36 +66,41 @@ export const uploadImages = async (
   return imageIds
 }
 
+const isUint8ArrayOfArrayBuffer = (
+  data: Uint8Array,
+): data is Uint8Array<ArrayBuffer> => data.buffer instanceof ArrayBuffer
+
+const wasmUrl = import.meta.env.DEV
+  ? new URL(
+    "../../node_modules/@imagemagick/magick-wasm/dist/magick.wasm",
+    import.meta.url,
+  )
+  : new URL("./magick.wasm", import.meta.url)
+// `initializeImageMagick` accepts URL, but does not support protocols other than http(s).
+// So we fetch the wasm file ourselves.
+const initMagickPromise = fetch(wasmUrl).then((res) => res.arrayBuffer())
+  .then((buf) => initializeImageMagick(buf))
+
 const resizeImage = async (imageBlob: Blob) => {
-  const { height, width } = imageSize(await imageBlob.bytes())
-  const imagePixels = height * width
+  await initMagickPromise
 
-  if (imagePixels <= TRAQ_IMAGE_MAX_PIXELS) {
-    return imageBlob
-  }
+  return ImageMagick.read(await imageBlob.bytes(), (image) => {
+    const imagePixels = image.height * image.width
 
-  const scale = Math.sqrt(TRAQ_IMAGE_MAX_PIXELS / imagePixels)
-  const resizeHeight = Math.max(1, Math.floor(height * scale))
-  const resizeWidth = Math.max(1, Math.floor(width * scale))
-  const resizedBitmap = await createImageBitmap(imageBlob, {
-    resizeHeight,
-    resizeQuality: "medium",
-    resizeWidth,
+    if (imagePixels > TRAQ_IMAGE_MAX_PIXELS) {
+      const scale = Math.sqrt(TRAQ_IMAGE_MAX_PIXELS / imagePixels)
+      const newHeight = Math.max(1, Math.floor(image.height * scale))
+      const newWidth = Math.max(1, Math.floor(image.width * scale))
+
+      image.resize(newWidth, newHeight)
+    }
+
+    return image.write(MagickFormat.WebP, (data) => {
+      if (isUint8ArrayOfArrayBuffer(data)) {
+        return new Blob([data], { type: "image/webp" })
+      }
+
+      throw new Error("Unexpected data type from ImageMagick")
+    })
   })
-  const offscreen = new OffscreenCanvas(resizeWidth, resizeHeight)
-  const ctx = offscreen.getContext("bitmaprenderer")
-
-  if (!ctx) {
-    throw new Error("Failed to get bitmaprenderer context")
-  }
-
-  ctx.transferFromImageBitmap(resizedBitmap)
-
-  const blob = await offscreen.convertToBlob({
-    type: "image/webp",
-  })
-
-  resizedBitmap.close()
-
-  return blob
 }
