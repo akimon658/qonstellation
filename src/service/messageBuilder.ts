@@ -3,7 +3,11 @@ import {
   AppBskyEmbedRecordWithMedia,
   type AppBskyFeedPost,
 } from "@atcute/bluesky"
-import { is, parseResourceUri } from "@atcute/lexicons"
+import {
+  type ParsedResourceUri,
+  parseResourceUri,
+} from "@atcute/lexicons/syntax"
+import { is } from "@atcute/lexicons/validations"
 import { config } from "../lib/config.ts"
 import { getTraqMessageIdByAtProtoUri } from "../repository/post.ts"
 import { getMessages } from "../traq/sdk.gen.ts"
@@ -125,20 +129,30 @@ export class MessageBuilder {
         embeddedRecordUriStr = post.embed.record.uri
       }
 
-      let urlToAppend: string
-      const traqMessageId = await getTraqMessageIdByAtProtoUri(
-        embeddedRecordUriStr,
-      )
+      const embeddedRecordUri = parseResourceUri(embeddedRecordUriStr)
 
-      if (traqMessageId) {
-        // This message is already posted to traQ, so we can append its URL to the text
-        urlToAppend = getTraqMessageUrl(traqMessageId)
-      } else {
-        // This message is not posted to traQ, so we should append the URL to the original post
-        urlToAppend = getBlueskyPostUrl(embeddedRecordUriStr)
+      if (!embeddedRecordUri.ok) {
+        throw new Error("Invalid embedded record URI", {
+          cause: embeddedRecordUri.error,
+        })
       }
 
-      text = text ? `${text}\n${urlToAppend}` : urlToAppend
+      if (embeddedRecordUri.value.collection === "app.bsky.feed.post") {
+        let urlToAppend: string
+        const traqMessageId = await getTraqMessageIdByAtProtoUri(
+          embeddedRecordUriStr,
+        )
+
+        if (traqMessageId) {
+          // This message is already posted to traQ, so we can append its URL to the text
+          urlToAppend = getTraqMessageUrl(traqMessageId)
+        } else {
+          // This message is not posted to traQ, so we should append the URL to the original post
+          urlToAppend = getBlueskyPostUrl(embeddedRecordUri.value)
+        }
+
+        text = text ? `${text}\n${urlToAppend}` : urlToAppend
+      }
     }
 
     return text
@@ -149,12 +163,20 @@ const getTraqMessageUrl = (messageId: string) => {
   return `${config.traqBaseUrl}/messages/${messageId}`
 }
 
-const getBlueskyPostUrl = (uri: string) => {
-  const parsed = parseResourceUri(uri)
+const getBlueskyPostUrl = (resourceUri: string | ParsedResourceUri) => {
+  let uri: ParsedResourceUri
 
-  if (!parsed.ok) {
-    throw new Error("Invalid post URI", { cause: parsed.error })
+  if (typeof resourceUri === "string") {
+    const parsed = parseResourceUri(resourceUri)
+
+    if (!parsed.ok) {
+      throw new Error("Invalid post URI", { cause: parsed.error })
+    }
+
+    uri = parsed.value
+  } else {
+    uri = resourceUri
   }
 
-  return `https://bsky.app/profile/${parsed.value.repo}/post/${parsed.value.rkey}`
+  return `https://bsky.app/profile/${uri.repo}/post/${uri.rkey}`
 }
