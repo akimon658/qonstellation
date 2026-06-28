@@ -1,5 +1,5 @@
 /// <reference types="@atcute/atproto" />
-import type { AppBskyEmbedImages } from "@atcute/bluesky"
+import type { AppBskyEmbedImages, AppBskyEmbedVideo } from "@atcute/bluesky"
 import { type Did } from "@atcute/lexicons"
 import { isLegacyBlob } from "@atcute/lexicons/interfaces"
 import {
@@ -64,6 +64,54 @@ export const uploadImages = async (
   )
 
   return imageIds
+}
+
+interface UploadVideoParams {
+  accessToken: string
+  did: Did
+  video: AppBskyEmbedVideo.Main
+  targetChannelId: string
+}
+
+export const uploadVideo = async (
+  { accessToken, did, video, targetChannelId }: UploadVideoParams,
+) => {
+  if (isLegacyBlob(video.video)) {
+    throw new Error("Legacy blobs are not supported")
+  }
+
+  const { data: downloadRes, ok } = await client.get(
+    "com.atproto.sync.getBlob",
+    {
+      as: "blob",
+      params: {
+        did,
+        cid: video.video.ref.$link,
+      },
+    },
+  )
+
+  if (!ok) {
+    throw new Error(
+      `Failed to download video: ${video.video.ref.$link}`,
+    )
+  }
+
+  const { data: uploadedFile } = await postFile({
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: {
+      channelId: targetChannelId,
+      file: downloadRes,
+    },
+  })
+
+  if (!uploadedFile) {
+    throw new Error(`Failed to upload video: ${video.video.ref.$link}`)
+  }
+
+  return uploadedFile.id
 }
 
 const isUint8ArrayOfArrayBuffer = (

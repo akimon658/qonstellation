@@ -1,4 +1,4 @@
-import { AppBskyEmbedVideo, AppBskyFeedPost } from "@atcute/bluesky"
+import { AppBskyFeedPost } from "@atcute/bluesky"
 import { JetstreamSubscription } from "@atcute/jetstream"
 import { type Did, is } from "@atcute/lexicons"
 import { debounce } from "@std/async"
@@ -90,14 +90,13 @@ export class JetstreamService {
           })
 
           if (
-            is(AppBskyEmbedVideo.mainSchema, event.commit.record.embed) ||
-            !(await isSelfThread({
+            !await isSelfThread({
               post: event.commit.record,
               authorDid: event.did,
-            }))
+            })
           ) {
             console.warn(
-              `Skipping post ${atProtoUri} because it has video or is not a self thread`,
+              `Skipping post ${atProtoUri} because it is not a self thread`,
             )
             this.updateCursor(event.time_us)
 

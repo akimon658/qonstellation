@@ -1,12 +1,13 @@
 import {
   AppBskyEmbedImages,
   AppBskyEmbedRecordWithMedia,
+  AppBskyEmbedVideo,
   AppBskyFeedPost,
 } from "@atcute/bluesky"
 import { is } from "@atcute/lexicons/validations"
 import { retry } from "@std/async/retry"
 import { buildAtProtoUri } from "../lib/atProto.ts"
-import { uploadImages } from "../lib/image.ts"
+import { uploadImages, uploadVideo } from "../lib/file.ts"
 import {
   getTraqMessageIdByAtProtoUri,
   savePostMetadata,
@@ -86,30 +87,51 @@ export class EventQueueWorker {
         console.debug("Attempting to post message to traQ", atProtoUri)
 
         let images: AppBskyEmbedImages.Image[] | undefined
-        let imageIds: string[] | undefined
+        let video: AppBskyEmbedVideo.Main | undefined
+        let fileIds: string[] | undefined
 
         if (is(AppBskyEmbedImages.mainSchema, record.embed)) {
           images = record.embed.images
+        } else if (is(AppBskyEmbedVideo.mainSchema, record.embed)) {
+          video = record.embed
         } else if (
           is(
             AppBskyEmbedRecordWithMedia.mainSchema,
             record.embed,
-          ) &&
-          is(AppBskyEmbedImages.mainSchema, record.embed.media)
+          )
         ) {
-          images = record.embed.media.images
+          if (is(AppBskyEmbedImages.mainSchema, record.embed.media)) {
+            images = record.embed.media.images
+          } else if (is(AppBskyEmbedVideo.mainSchema, record.embed.media)) {
+            video = record.embed.media
+          }
         }
 
         if (images?.length) {
-          imageIds = await uploadImages({
+          const imageFileIds = await uploadImages({
             accessToken,
             did: event.did,
             images,
             targetChannelId: userSetting.targetChannelId,
           })
+          fileIds = imageFileIds
 
           console.debug(
-            `Uploaded images for post ${atProtoUri}: ${imageIds}`,
+            `Uploaded images for post ${atProtoUri}: ${imageFileIds}`,
+          )
+        }
+
+        if (video) {
+          const videoFileId = await uploadVideo({
+            accessToken,
+            did: event.did,
+            video,
+            targetChannelId: userSetting.targetChannelId,
+          })
+          fileIds = fileIds ? [...fileIds, videoFileId] : [videoFileId]
+
+          console.debug(
+            `Uploaded video for post ${atProtoUri}: ${videoFileId}`,
           )
         }
 
@@ -126,7 +148,7 @@ export class EventQueueWorker {
           },
           body: {
             content: await messageBuilder.build({
-              imageIds,
+              fileIds,
               post: record,
             }),
           },
