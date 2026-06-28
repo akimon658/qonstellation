@@ -19,7 +19,7 @@ interface MessageBuilderConstructorParams {
 
 interface BuildMessageParams {
   post: AppBskyFeedPost.Main
-  imageIds?: string[]
+  fileIds?: string[]
 }
 
 const encoder = new TextEncoder()
@@ -36,7 +36,7 @@ export class MessageBuilder {
     this.traqAccessToken = traqAccessToken
   }
 
-  async build({ post, imageIds }: BuildMessageParams) {
+  async build({ post, fileIds }: BuildMessageParams) {
     let text = post.text
 
     if (post.facets?.length) {
@@ -74,13 +74,13 @@ export class MessageBuilder {
       text = decoder.decode(textBytes)
     }
 
-    if (imageIds?.length) {
-      const imageLinks = imageIds.map((id) =>
+    if (fileIds?.length) {
+      const fileLinks = fileIds.map((id: string) =>
         `${config.traqBaseUrl}/files/${id}`
       )
         .join("\n")
 
-      text = text ? `${text}\n${imageLinks}` : imageLinks
+      text = text ? `${text}\n${fileLinks}` : fileLinks
     }
 
     if (post.reply) {
