@@ -12,6 +12,10 @@ import { client } from "./blueskyClient.ts"
 
 const TRAQ_IMAGE_MAX_PIXELS = 2560 * 1600
 
+declare global {
+  var gc: (() => void) | undefined
+}
+
 interface UploadImageParams {
   accessToken: string
   did: Did
@@ -62,6 +66,10 @@ export const uploadImages = async (
     }
 
     imageIds.push(uploadedFile.id)
+
+    if (typeof gc === "function") {
+      gc()
+    }
   }
 
   return imageIds

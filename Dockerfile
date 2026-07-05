@@ -22,4 +22,4 @@ EXPOSE 8000
 ARG GIT_REVISION
 ENV DENO_DEPLOYMENT_ID=${GIT_REVISION}
 
-CMD ["serve", "--allow-env", "--allow-net", "--allow-read", "/app/server.js"]
+CMD ["serve", "--allow-env", "--allow-net", "--allow-read", "--v8-flags=--expose-gc", "/app/server.js"]
