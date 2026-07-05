@@ -22,46 +22,47 @@ interface UploadImageParams {
 export const uploadImages = async (
   { accessToken, did, images, targetChannelId }: UploadImageParams,
 ) => {
-  const imageIds = await Promise.all(
-    images.map(async (imageMeta) => {
-      if (isLegacyBlob(imageMeta.image)) {
-        throw new Error("Legacy blobs are not supported")
-      }
+  const imageIds = []
 
-      const { data: downloadRes, ok } = await client.get(
-        "com.atproto.sync.getBlob",
-        {
-          as: "blob",
-          params: {
-            did,
-            cid: imageMeta.image.ref.$link,
-          },
+  // Process each image sequentially to reduce memory usage and avoid overwhelming the server with concurrent requests.
+  for (const imageMeta of images) {
+    if (isLegacyBlob(imageMeta.image)) {
+      throw new Error("Legacy blobs are not supported")
+    }
+
+    const { data: downloadRes, ok } = await client.get(
+      "com.atproto.sync.getBlob",
+      {
+        as: "blob",
+        params: {
+          did,
+          cid: imageMeta.image.ref.$link,
         },
+      },
+    )
+
+    if (!ok) {
+      throw new Error(
+        `Failed to download image: ${imageMeta.image.ref.$link}`,
       )
+    }
 
-      if (!ok) {
-        throw new Error(
-          `Failed to download image: ${imageMeta.image.ref.$link}`,
-        )
-      }
+    const { data: uploadedFile } = await postFile({
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: {
+        channelId: targetChannelId,
+        file: await resizeImage(downloadRes),
+      },
+    })
 
-      const { data: uploadedFile } = await postFile({
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: {
-          channelId: targetChannelId,
-          file: await resizeImage(downloadRes),
-        },
-      })
+    if (!uploadedFile) {
+      throw new Error(`Failed to upload image: ${imageMeta.image.ref.$link}`)
+    }
 
-      if (!uploadedFile) {
-        throw new Error(`Failed to upload image: ${imageMeta.image.ref.$link}`)
-      }
-
-      return uploadedFile.id
-    }),
-  )
+    imageIds.push(uploadedFile.id)
+  }
 
   return imageIds
 }
