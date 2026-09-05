@@ -1,0 +1,57 @@
+[package]
+edition = "2024"
+name = "qonstellation"
+version = "0.7.3"
+
+[dependencies]
+anyhow = "1.0.104"
+async-trait = "0.1.92"
+atproto-jetstream = "0.14.5"
+atrium-api = "0.25.8"
+axum = "0.8.9"
+base64 = "0.22.1"
+bsky-sdk = { default-features = false, features = [
+  "default-client",
+], version = "0.1.24" }
+futures-util = "0.3.34"
+http = "1.5.0"
+image = { default-features = false, features = [
+  "gif",
+  "jpeg",
+  "png",
+  "webp",
+], version = "0.25.10" }
+jsonwebtoken = "9.3.1"
+maud = { features = ["axum"], version = "0.27.0" }
+oauth2 = { default-features = false, features = [
+  "native-tls",
+], version = "5.0.0" }
+reqwest = { features = ["json", "multipart"], version = "0.12.28" }
+serde = { features = ["derive"], version = "1.0.229" }
+serde_json = "1.0.151"
+sqlx = { features = [
+  "json",
+  "macros",
+  "migrate",
+  "mysql",
+  "runtime-tokio",
+  "uuid",
+], version = "0.8.6" }
+tokio = { features = [
+  "io-util",
+  "macros",
+  "net",
+  "rt-multi-thread",
+  "signal",
+  "sync",
+  "time",
+], version = "1.53.1" }
+tower-cookies = "0.11.0"
+tracing = "0.1.44"
+tracing-subscriber = { features = ["env-filter", "fmt"], version = "0.3.23" }
+uuid = { features = ["v4"], version = "1.24.0" }
+
+[lints.clippy]
+absolute_paths = "warn"
+expect_used = "deny"
+unwrap_used = "deny"

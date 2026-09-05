@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "INSERT INTO user_settings (user_id, did, target_channel_id) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE did = ?, target_channel_id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 5
+    },
+    "nullable": []
+  },
+  "hash": "0fded7efc740d23e660c142303943b8ff7d6ebb0544396155d370d7fa3790519"
+}

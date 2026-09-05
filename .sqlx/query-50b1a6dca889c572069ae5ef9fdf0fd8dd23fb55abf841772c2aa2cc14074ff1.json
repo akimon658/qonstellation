@@ -1,0 +1,24 @@
+{
+  "db_name": "MySQL",
+  "query": "SELECT did FROM user_settings",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "did",
+        "type_info": {
+          "type": "VarString",
+          "flags": "NOT_NULL | NO_DEFAULT_VALUE",
+          "max_size": 8192
+        }
+      }
+    ],
+    "parameters": {
+      "Right": 0
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "50b1a6dca889c572069ae5ef9fdf0fd8dd23fb55abf841772c2aa2cc14074ff1"
+}

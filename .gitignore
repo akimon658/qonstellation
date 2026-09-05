@@ -1,6 +1,11 @@
+/target
+**/*.rs.bk
+.env
+.DS_Store
+.direnv
+
+# Old TS artifacts
 _fresh/
 dist/
 node_modules/
 traq/
-
-.env

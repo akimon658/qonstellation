@@ -1,0 +1,24 @@
+{
+  "db_name": "MySQL",
+  "query": "SELECT value FROM system_states WHERE `key` = ?",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "value",
+        "type_info": {
+          "type": "LongLong",
+          "flags": "NOT_NULL | NO_DEFAULT_VALUE",
+          "max_size": 20
+        }
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "d90685864ff5910c2e55eac08afa7f0de77dfb1345efbdcffe0c1971e0ad24c9"
+}

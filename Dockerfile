@@ -1,25 +1,34 @@
-#syntax=docker/dockerfile:1
-FROM ghcr.io/denoland/deno:debian-2.8.1@sha256:ddaad47cbbbbd856d73bd0d50074a0e308c51671d83442eebb15f1039dd4a822 AS builder
+# syntax=docker/dockerfile:1
+FROM rust:1.98.0-slim-trixie@sha256:17d1ba895198f9934c6314ec5346a0d5115372f3243390c3d731e242f35c2f27 AS builder
 
 WORKDIR /app
 
-RUN --mount=type=bind,source=deno.jsonc,target=deno.jsonc \
-    --mount=type=bind,source=deno.lock,target=deno.lock \
-    --mount=type=cache,target=/deno-dir/ \
-    deno install --frozen
+ENV CARGO_TARGET_DIR=/tmp/target
 
-COPY . .
+RUN rm -f /etc/apt/apt.conf.d/docker-clean; echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
+RUN --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+    libssl-dev \
+    pkg-config
 
-RUN --mount=type=cache,target=/deno-dir/ \
-    deno task build
+RUN --mount=type=cache,target=/usr/local/cargo/registry,sharing=locked \
+    --mount=type=bind,source=.,target=. \
+    cargo fetch --locked
 
-FROM ghcr.io/denoland/deno:distroless-2.8.1@sha256:2005d7c2aed55c198dcf97df5a3d4d1926a87a80b5bb8b5175a607b18b319f7b
+RUN --mount=type=cache,target=/usr/local/cargo/registry,sharing=locked \
+    --mount=type=cache,target=/tmp/target,sharing=locked \
+    --mount=type=bind,target=. \
+    SQLX_OFFLINE=true cargo build  --release && \
+    cp /tmp/target/release/qonstellation /tmp/qonstellation
+
+FROM gcr.io/distroless/base-debian13:nonroot@sha256:d199d20fb09c898d8822ae5cbd5cf3c6d424e9b5e1fc2eb9a719a7752cd9d861
 
 WORKDIR /app
-COPY --from=builder /app/_fresh/ ./
+
+COPY --from=builder /tmp/qonstellation /app/qonstellation
 
 EXPOSE 8000
-ARG GIT_REVISION
-ENV DENO_DEPLOYMENT_ID=${GIT_REVISION}
 
-CMD ["serve", "--allow-env", "--allow-net", "--allow-read", "--v8-flags=--expose-gc", "/app/server.js"]
+ENTRYPOINT ["/app/qonstellation"]

@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "INSERT INTO system_states (`key`, value) VALUES (?, ?) ON DUPLICATE KEY UPDATE value = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": []
+  },
+  "hash": "86280f69f14fb257df2d162287f60f5b679cb5d7d8a803dba8b75c09c1623066"
+}

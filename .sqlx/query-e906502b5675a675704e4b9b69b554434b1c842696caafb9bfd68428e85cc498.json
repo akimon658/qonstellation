@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "INSERT INTO posts (at_proto_uri, traq_message_id) VALUES (?, ?) ON DUPLICATE KEY UPDATE traq_message_id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": []
+  },
+  "hash": "e906502b5675a675704e4b9b69b554434b1c842696caafb9bfd68428e85cc498"
+}

@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "DELETE FROM queued_events WHERE id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": []
+  },
+  "hash": "860aad5b68f1e9599b23cc6d869374e7e0a4ab81bd8185641f332f654746e2a0"
+}

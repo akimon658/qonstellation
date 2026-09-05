@@ -1,5 +1,6 @@
 *
+!.sqlx/
+!migrations/
 !src/
-!deno.jsonc
-!deno.lock
-!vite.config.ts
+!Cargo.toml
+!Cargo.lock
