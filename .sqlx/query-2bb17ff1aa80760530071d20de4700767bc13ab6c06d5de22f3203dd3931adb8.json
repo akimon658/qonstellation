@@ -1,0 +1,24 @@
+{
+  "db_name": "MySQL",
+  "query": "SELECT access_token FROM user_tokens WHERE user_id = ?",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "access_token",
+        "type_info": {
+          "type": "VarString",
+          "flags": "NOT_NULL | NO_DEFAULT_VALUE",
+          "max_size": 144
+        }
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "2bb17ff1aa80760530071d20de4700767bc13ab6c06d5de22f3203dd3931adb8"
+}

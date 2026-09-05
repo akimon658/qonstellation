@@ -1,0 +1,24 @@
+{
+  "db_name": "MySQL",
+  "query": "SELECT traq_message_id FROM posts WHERE at_proto_uri = ?",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "traq_message_id",
+        "type_info": {
+          "type": "String",
+          "flags": "NOT_NULL | BINARY | NO_DEFAULT_VALUE",
+          "max_size": 16
+        }
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "48f1ae84cc93209f70a0cf6e80eb25fc74a51882d35ff66f2f9343bfbf400555"
+}

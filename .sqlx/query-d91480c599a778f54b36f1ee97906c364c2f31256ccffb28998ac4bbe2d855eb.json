@@ -1,0 +1,34 @@
+{
+  "db_name": "MySQL",
+  "query": "SELECT did, target_channel_id FROM user_settings WHERE user_id = ?",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "did",
+        "type_info": {
+          "type": "VarString",
+          "flags": "NOT_NULL | NO_DEFAULT_VALUE",
+          "max_size": 8192
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "target_channel_id",
+        "type_info": {
+          "type": "String",
+          "flags": "NOT_NULL | BINARY | NO_DEFAULT_VALUE",
+          "max_size": 16
+        }
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "d91480c599a778f54b36f1ee97906c364c2f31256ccffb28998ac4bbe2d855eb"
+}

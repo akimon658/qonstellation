@@ -1,0 +1,34 @@
+{
+  "db_name": "MySQL",
+  "query": "SELECT id, event_json AS \"event_json: serde_json::Value\" FROM queued_events ORDER BY id ASC LIMIT 1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": {
+          "type": "Long",
+          "flags": "NOT_NULL | PRIMARY_KEY | AUTO_INCREMENT",
+          "max_size": 11
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "event_json: serde_json::Value",
+        "type_info": {
+          "type": "Blob",
+          "flags": "NOT_NULL | BLOB | BINARY | NO_DEFAULT_VALUE",
+          "max_size": 4294967295
+        }
+      }
+    ],
+    "parameters": {
+      "Right": 0
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "8d4eb616b37cfb1dc39791762bfe1f3fcdf668fd6a02b44b0cdf4ee2d39037f3"
+}
