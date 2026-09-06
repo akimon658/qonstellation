@@ -1,16 +1,13 @@
 use std::cmp::Reverse;
+use std::str::FromStr;
+
+use atproto_record::aturi::ATURI;
 
 use crate::app_config::config::Config;
 use crate::database::DbPool;
-use crate::model::post_event::{Facet, FacetFeature, PostEmbed, PostRecord};
+use crate::model::post_event::{Facet, FacetFeature, PostEmbed, PostRecord, SkyblurVisibility};
 use crate::repository;
-
-/// Parsed AT Protocol resource URI (`at://repo/collection/rkey`).
-struct ParsedResourceUri {
-    repo: String,
-    collection: String,
-    rkey: String,
-}
+use crate::service::skyblur;
 
 pub struct MessageBuilder {
     target_channel_id: String,
@@ -33,7 +30,36 @@ impl MessageBuilder {
         record: &PostRecord,
         file_ids: Option<&[String]>,
     ) -> anyhow::Result<String> {
-        let mut text = extract_text(record)?;
+        // Skyblur posts need special handling before the generic flow:
+        // - `public`: restore the original text and convert `[hidden]` ranges
+        //   to traQ spoilers (`!!hidden!!`). The restored text replaces the
+        //   masked text, so facet offsets (which refer to the masked text)
+        //   must not be applied to it.
+        // - other visibilities (or a failed fetch): keep the masked text and
+        //   link to the Skyblur page instead.
+        let mut skyblur_page_url: Option<String> = None;
+        let mut restored_text: Option<String> = None;
+
+        if let Some(ref meta) = record.skyblur {
+            if meta.visibility == SkyblurVisibility::Public {
+                match skyblur::fetch_public_original_text(http_client, meta).await {
+                    Ok(original) => {
+                        restored_text = Some(skyblur::convert_brackets_to_traq_spoiler(&original));
+                    }
+                    Err(e) => {
+                        tracing::warn!("Failed to restore Skyblur post {}: {e}", meta.uri());
+                        skyblur_page_url = Some(skyblur::skyblur_page_url(meta));
+                    }
+                }
+            } else {
+                skyblur_page_url = Some(skyblur::skyblur_page_url(meta));
+            }
+        }
+
+        let mut text = match restored_text {
+            Some(restored) => restored,
+            None => extract_text(record)?,
+        };
 
         if let Some(ids) = file_ids
             && !ids.is_empty()
@@ -45,6 +71,10 @@ impl MessageBuilder {
                 .join("\n");
 
             append_url(&mut text, &file_links);
+        }
+
+        if let Some(url) = skyblur_page_url {
+            append_url(&mut text, &url);
         }
 
         if let Some(ref reply) = record.reply {
@@ -85,7 +115,7 @@ impl MessageBuilder {
         };
 
         if let Some(uri_str) = embedded_record_uri_str {
-            let embedded_record_uri = parse_resource_uri(uri_str)
+            let embedded_record_uri = ATURI::from_str(uri_str)
                 .map_err(|e| anyhow::anyhow!("Invalid embedded record URI: {e}"))?;
 
             if embedded_record_uri.collection == "app.bsky.feed.post" {
@@ -160,47 +190,18 @@ fn get_traq_message_url(traq_base_url: &str, message_id: &str) -> String {
     format!("{traq_base_url}/messages/{message_id}")
 }
 
-fn get_bluesky_post_url(uri: &ParsedResourceUri) -> String {
-    format!("https://bsky.app/profile/{}/post/{}", uri.repo, uri.rkey)
+fn get_bluesky_post_url(uri: &ATURI) -> String {
+    format!(
+        "https://bsky.app/profile/{}/post/{}",
+        uri.authority, uri.record_key
+    )
 }
 
 fn get_bluesky_post_url_from_str(resource_uri: &str) -> anyhow::Result<String> {
     let uri =
-        parse_resource_uri(resource_uri).map_err(|e| anyhow::anyhow!("Invalid post URI: {e}"))?;
+        ATURI::from_str(resource_uri).map_err(|e| anyhow::anyhow!("Invalid post URI: {e}"))?;
 
     Ok(get_bluesky_post_url(&uri))
-}
-
-fn parse_resource_uri(uri: &str) -> anyhow::Result<ParsedResourceUri> {
-    let rest = uri
-        .strip_prefix("at://")
-        .ok_or_else(|| anyhow::anyhow!("URI must start with at://"))?;
-
-    let mut parts = rest.split('/');
-
-    let repo = parts
-        .next()
-        .ok_or_else(|| anyhow::anyhow!("Missing repo"))?;
-    let collection = parts
-        .next()
-        .ok_or_else(|| anyhow::anyhow!("Missing collection"))?;
-    let rkey = parts
-        .next()
-        .ok_or_else(|| anyhow::anyhow!("Missing rkey"))?;
-
-    if repo.is_empty() || collection.is_empty() || rkey.is_empty() {
-        return Err(anyhow::anyhow!("Empty URI component"));
-    }
-
-    if parts.next().is_some() {
-        return Err(anyhow::anyhow!("Too many URI components"));
-    }
-
-    Ok(ParsedResourceUri {
-        repo: repo.to_string(),
-        collection: collection.to_string(),
-        rkey: rkey.to_string(),
-    })
 }
 
 async fn get_latest_message_id(

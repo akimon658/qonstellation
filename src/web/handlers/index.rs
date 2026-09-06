@@ -24,10 +24,7 @@ pub async fn handler(State(state): State<Arc<AppState>>, headers: HeaderMap) -> 
                 Ok(None) => (String::new(), String::new()),
                 Err(e) => {
                     tracing::error!("Failed to load settings: {}", e);
-                    return (
-                        StatusCode::INTERNAL_SERVER_ERROR,
-                        "Failed to load settings",
-                    )
+                    return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to load settings")
                         .into_response();
                 }
             };
