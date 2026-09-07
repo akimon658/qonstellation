@@ -1,0 +1,37 @@
+when:
+  - event: ["manual"]
+  - event: ["push"]
+    branch: ["main"]
+
+engine: "nixery"
+
+dependencies:
+  nixpkgs:
+    - nodejs
+    - git
+    - openssh
+    - cargo
+    - nix
+
+steps:
+  - name: "Setup SSH"
+    command: |
+      mkdir -p ~/.ssh
+      echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+      chmod 600 ~/.ssh/id_ed25519
+      ssh-keyscan -t ed25519,rsa tangled.org >> ~/.ssh/known_hosts
+
+  - name: "Install Renovate"
+    command: |
+      echo "@akimon658:registry=https://npm.pkg.github.com" > ~/.npmrc
+      echo "//npm.pkg.github.com/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+      npm install -g @akimon658/renovate
+
+  - name: "Run Renovate"
+    environment:
+      RENOVATE_PLATFORM: tangled
+      RENOVATE_USERNAME: bot.akimo.dev
+      RENOVATE_GIT_AUTHOR: "Renovate <noreply+renovate@akimo.dev>"
+      RENOVATE_REPOSITORIES: '["akimo.dev/qonstellation"]'
+      RENOVATE_LOG_LEVEL: debug
+    command: renovate
