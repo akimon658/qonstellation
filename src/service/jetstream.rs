@@ -20,6 +20,9 @@ use crate::service::bluesky_client::BlueskyClient;
 const CURSOR_SAVE_DEBOUNCE: Duration = Duration::from_secs(30);
 const NO_DIDS_RETRY: Duration = Duration::from_secs(30);
 const MAX_BACKOFF: Duration = Duration::from_secs(300);
+/// Connections lasting at least this long are considered healthy, so the
+/// reconnect backoff counter resets.
+const STABLE_CONNECTION: Duration = Duration::from_secs(60);
 
 pub async fn start(
     endpoints: &[&str],
@@ -138,17 +141,37 @@ pub async fn start(
             }
 
             let token = cancel_token.clone();
+            let connected_at = Instant::now();
             match consumer.run_background(token).await {
-                Ok(_) => {
+                Ok(_) if cancel_token.is_cancelled() => {
                     info!("Jetstream consumer exited gracefully");
                     if let Err(e) = cursor_saver.flush().await {
                         error!("Failed to flush Jetstream cursor on shutdown: {}", e);
                     }
                     return Ok(());
                 }
+                Ok(_) => {
+                    warn!(
+                        "Jetstream endpoint {} closed the connection, reconnecting...",
+                        endpoint
+                    );
+                }
                 Err(e) => {
                     error!("Jetstream endpoint {} failed: {}", endpoint, e);
                 }
+            }
+
+            // Save the debounced cursor so a reconnect replays as little as
+            // possible, and reuse the flushed value for the next endpoint.
+            match cursor_saver.flush().await {
+                Ok(Some(fresh)) => cursor = Some(fresh),
+                Ok(None) => {}
+                Err(e) => {
+                    error!("Failed to flush Jetstream cursor before reconnect: {}", e)
+                }
+            }
+            if connected_at.elapsed() >= STABLE_CONNECTION {
+                backoff_attempt = 0;
             }
         }
 
@@ -205,14 +228,16 @@ impl CursorSaver {
         Ok(())
     }
 
-    async fn flush(&self) -> anyhow::Result<()> {
+    /// Persists the debounced cursor and returns it, so reconnects can reuse
+    /// the freshest value instead of a stale local one.
+    async fn flush(&self) -> anyhow::Result<Option<i64>> {
         let cursor = *self.last_cursor.lock().await;
         if let Some(cursor) = cursor {
             system_state::save_jetstream_cursor(&self.pool, cursor).await?;
             *self.last_write.lock().await = Some(Instant::now());
         }
 
-        Ok(())
+        Ok(cursor)
     }
 }
 
