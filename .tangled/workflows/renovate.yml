@@ -36,4 +36,4 @@ steps:
       echo "@akimon658:registry=https://npm.pkg.github.com" > ~/.npmrc
       echo "//npm.pkg.github.com/:_authToken=$NPM_TOKEN" >> ~/.npmrc
 
-      npx -y @akimon658/renovate@0.0.0-semantic-release-tangled.12
+      npx -y @akimon658/renovate@0.0.0-semantic-release-tangled.13
