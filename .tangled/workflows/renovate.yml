@@ -23,10 +23,15 @@ steps:
       RENOVATE_REPOSITORIES: '["akimo.dev/qonstellation"]'
       RENOVATE_LOG_LEVEL: debug
     command: |
+      echo "root:x:0:0:root:$HOME:/bin/sh" >> /etc/passwd
+
       mkdir -p ~/.ssh
-      echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+      printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+      chmod 700 ~/.ssh
       chmod 600 ~/.ssh/id_ed25519
-      ssh-keyscan -t ed25519,rsa tangled.org >> ~/.ssh/known_hosts
+      ssh-keyscan -t ed25519,rsa knot1.tangled.sh tangled.org >> ~/.ssh/known_hosts 2>/dev/null
+
+      export GIT_SSH_COMMAND="ssh -i $HOME/.ssh/id_ed25519 -o UserKnownHostsFile=$HOME/.ssh/known_hosts"
 
       echo "@akimon658:registry=https://npm.pkg.github.com" > ~/.npmrc
       echo "//npm.pkg.github.com/:_authToken=$NPM_TOKEN" >> ~/.npmrc
