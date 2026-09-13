@@ -1,6 +1,6 @@
 services:
   mariadb:
-    image: mariadb:10.11.16-jammy
+    image: mariadb:10.11.19-jammy
     restart: unless-stopped
     ports:
       - 3306:3306
