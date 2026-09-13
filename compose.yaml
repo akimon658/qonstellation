@@ -37,7 +37,7 @@ services:
         condition: service_healthy
 
   traq_ui:
-    image: ghcr.io/traptitech/traq-ui:3.31.3
+    image: ghcr.io/traptitech/traq-ui:3.33.5
     restart: unless-stopped
     volumes:
       - type: volume
