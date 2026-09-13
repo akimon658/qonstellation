@@ -25,7 +25,7 @@ steps:
     command: |
       echo "@akimon658:registry=https://npm.pkg.github.com" > ~/.npmrc
       echo "//npm.pkg.github.com/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-      npm install -g @akimon658/renovate
+      npm install -g @akimon658/renovate@0.0.0-semantic-release-tangled.11
 
   - name: "Run Renovate"
     environment:
