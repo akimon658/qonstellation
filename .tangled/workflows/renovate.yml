@@ -19,7 +19,7 @@ steps:
     environment:
       RENOVATE_PLATFORM: tangled
       RENOVATE_USERNAME: bot.akimo.dev
-      RENOVATE_GIT_AUTHOR: "Renovate <noreply+renovate@akimo.dev>"
+      RENOVATE_GIT_AUTHOR: "Renovate <bot@akimo.dev>"
       RENOVATE_REPOSITORIES: '["akimo.dev/qonstellation"]'
       RENOVATE_LOG_LEVEL: debug
     command: |
