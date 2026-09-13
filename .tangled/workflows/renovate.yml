@@ -7,11 +7,12 @@ engine: "nixery"
 
 dependencies:
   nixpkgs:
-    - nodejs
     - git
     - openssh
     - cargo
     - nix
+  nixpkgs/nixpkgs-unstable:
+    - nodejs_24
 
 steps:
   - name: "Run Renovate"
