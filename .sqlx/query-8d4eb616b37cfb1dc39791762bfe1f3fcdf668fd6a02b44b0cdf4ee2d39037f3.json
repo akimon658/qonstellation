@@ -9,7 +9,14 @@
         "type_info": {
           "type": "Long",
           "flags": "NOT_NULL | PRIMARY_KEY | AUTO_INCREMENT",
+          "collation": 63,
           "max_size": 11
+        },
+        "origin": {
+          "Table": {
+            "table": "qonstellation.queued_events",
+            "name": "id"
+          }
         }
       },
       {
@@ -18,7 +25,14 @@
         "type_info": {
           "type": "Blob",
           "flags": "NOT_NULL | BLOB | BINARY | NO_DEFAULT_VALUE",
+          "collation": 45,
           "max_size": 4294967295
+        },
+        "origin": {
+          "Table": {
+            "table": "qonstellation.queued_events",
+            "name": "event_json"
+          }
         }
       }
     ],
