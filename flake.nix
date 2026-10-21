@@ -18,6 +18,29 @@
         };
       in
       {
+        packages.default = pkgs.rustPlatform.buildRustPackage {
+          pname = "qonstellation";
+          version = "0.9.1";
+
+          src = pkgs.lib.fileset.toSource {
+            root = ./.;
+            fileset = pkgs.lib.fileset.unions [
+              ./.sqlx
+              ./migrations
+              ./src
+              ./Cargo.lock
+              ./Cargo.toml
+            ];
+          };
+
+          cargoLock.lockFile = ./Cargo.lock;
+
+          SQLX_OFFLINE = "true";
+
+          nativeBuildInputs = [ pkgs.pkg-config ];
+          buildInputs = [ pkgs.openssl ];
+        };
+
         apps = {
           fmt = {
             type = "app";
