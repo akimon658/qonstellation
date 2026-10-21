@@ -23,7 +23,7 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry,sharing=locked \
     SQLX_OFFLINE=true cargo build  --release && \
     cp /tmp/target/release/qonstellation /tmp/qonstellation
 
-FROM gcr.io/distroless/cc-debian13:nonroot@sha256:c31ff9abcb1910f3ab25c7957bdaf0bfe12a01eb546e8df2282f1c8f682b606c
+FROM gcr.io/distroless/cc-debian13:nonroot@sha256:83b9b50586253821cf63ffcec87d3d94265a093ad30da232039af962dd8f4edf
 
 WORKDIR /app
 
