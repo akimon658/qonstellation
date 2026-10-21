@@ -38,7 +38,7 @@ sqlx = { features = [
   "mysql",
   "runtime-tokio",
   "uuid",
-], version = "0.8.6" }
+], version = "0.9.0" }
 tokio = { features = [
   "io-util",
   "macros",
