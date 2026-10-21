@@ -21,7 +21,7 @@ services:
       retries: 10
 
   traq_server:
-    image: ghcr.io/traptitech/traq:3.28.1
+    image: ghcr.io/traptitech/traq:3.30.0
     restart: unless-stopped
     environment:
       TRAQ_MARIADB_HOST: mariadb
