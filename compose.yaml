@@ -45,7 +45,7 @@ services:
         target: /app/override
 
   caddy:
-    image: caddy:2.11.2-alpine
+    image: caddy:2.11.7-alpine
     restart: unless-stopped
     ports:
       - 3000:3000
