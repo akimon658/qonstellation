@@ -9,7 +9,14 @@
         "type_info": {
           "type": "VarString",
           "flags": "NOT_NULL | NO_DEFAULT_VALUE",
+          "collation": 45,
           "max_size": 8192
+        },
+        "origin": {
+          "Table": {
+            "table": "qonstellation.user_settings",
+            "name": "did"
+          }
         }
       }
     ],
