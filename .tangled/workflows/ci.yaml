@@ -7,4 +7,11 @@ image: nixos
 
 steps:
   - name: Test
-    command: nix build --print-build-logs
+    command: |
+      # NOTE: nix >= 2.30 builds under /nix/var/nix/builds by default, which
+      # lives on the microVM's 2GB root tmpfs and runs out of space on large
+      # Rust builds. Use a subdir of /workspace (backed by the 24GB /persist
+      # volume) instead. The dir must not be world-writable or nix refuses it.
+      mkdir -p /workspace/builds
+      chmod 755 /workspace/builds
+      nix build --print-build-logs --option build-dir /workspace/builds
