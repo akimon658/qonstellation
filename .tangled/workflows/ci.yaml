@@ -7,7 +7,10 @@ image: nixos
 
 steps:
   - name: Preflight disk check
-    command: df -h /persist /tmp /nix/store; du -xsh /persist/* 2>/dev/null | sort -h
+    command: |
+      echo "Checking disk usage"
+      df -h /persist /tmp /nix/store /workspace
+      ls /persist
 
   - name: Test
     command: nix build --print-build-logs
