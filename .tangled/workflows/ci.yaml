@@ -22,7 +22,7 @@ steps:
 
   - name: Probe build-dir location
     command: |
-      nix build --keep-failed --print-build-logs -o /tmp/probe-result --expr 'with import <nixpkgs> {}; runCommand "probe-fail" {} "exit 1"' 2>&1 | grep -iE 'keeping build directory|error' | head -5
+      nix build --impure --keep-failed --print-build-logs -o /tmp/probe-result --expr 'with import <nixpkgs> {}; runCommand "probe-fail" {} "exit 1"' 2>&1 | grep -iE 'keeping build directory|error' | head -5
       ls -d /tmp/nix-build-* /persist/tmp/nix-build-* /var/tmp/nix-build-* /run/nix-build-* /build/nix-build-* 2>/dev/null || true
 
   - name: Test
