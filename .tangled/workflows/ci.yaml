@@ -12,7 +12,8 @@ steps:
       df -h /persist /tmp /nix/store /workspace
       ls /persist
       echo "--- build env probe ---"
-      nix config show build-dir sandbox 2>&1 | head -5
+      nix config show build-dir 2>&1
+      nix config show sandbox 2>&1
       cat /run/spindle/nix.conf 2>/dev/null
       echo "TMPDIR=$TMPDIR"
       findmnt -T /tmp
