@@ -6,5 +6,8 @@ engine: microvm
 image: nixos
 
 steps:
+  - name: Preflight disk check
+    command: df -h /persist /tmp /nix/store; du -xsh /persist/* 2>/dev/null | sort -h
+
   - name: Test
     command: nix build --print-build-logs
