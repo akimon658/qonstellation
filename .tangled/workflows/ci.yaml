@@ -11,6 +11,13 @@ steps:
       echo "Checking disk usage"
       df -h /persist /tmp /nix/store /workspace
       ls /persist
+      echo "--- build env probe ---"
+      nix config show build-dir sandbox 2>&1 | head -5
+      cat /run/spindle/nix.conf 2>/dev/null
+      echo "TMPDIR=$TMPDIR"
+      findmnt -T /tmp
+      df -h / /run /var/tmp /tmp
+      systemctl show nix-daemon -p PrivateTmp 2>/dev/null
 
   - name: Test
     command: |
