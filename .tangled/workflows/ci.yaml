@@ -20,6 +20,11 @@ steps:
       df -h / /run /var/tmp /tmp
       systemctl show nix-daemon -p PrivateTmp 2>/dev/null
 
+  - name: Probe build-dir location
+    command: |
+      nix build -f '<nixpkgs>' hello --keep-failed -o /tmp/probe-result --print-build-logs 2>&1 | grep -iE 'keeping build directory|error' | head -5
+      ls -d /tmp/nix-build-* /persist/tmp/nix-build-* /var/tmp/nix-build-* /run/nix-build-* /build/nix-build-* 2>/dev/null
+
   - name: Test
     command: |
       nix build --print-build-logs --keep-failed || true
