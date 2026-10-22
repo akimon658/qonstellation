@@ -27,7 +27,9 @@ steps:
 
   - name: Test
     command: |
-      nix build --print-build-logs --option build-dir /persist/tmp || true
+      mkdir -p /persist/tmp/builds
+      chmod 755 /persist/tmp/builds
+      nix build --print-build-logs --option build-dir /persist/tmp/builds --keep-failed || true
       df -h /persist
       du -xsh /persist/rw-store /persist/tmp
       du -xsh /persist/tmp/nix-build-* 2>/dev/null | sort -rh | head
