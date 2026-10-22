@@ -13,4 +13,8 @@ steps:
       ls /persist
 
   - name: Test
-    command: nix build --print-build-logs
+    command: |
+      nix build --print-build-logs --keep-failed || true
+      df -h /persist
+      du -xsh /persist/rw-store /persist/tmp
+      du -xsh /persist/tmp/nix-build-* 2>/dev/null | sort -rh | head
